@@ -1,4 +1,5 @@
-# content of conftest.py
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 
 import pytest
 
