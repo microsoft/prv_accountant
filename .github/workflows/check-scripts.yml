@@ -1,6 +1,6 @@
 # This workflow will install Python dependencies and run the provided command line scripts
 
-name: Command line scripts
+name: Check scripts run
 
 on:
   push:
