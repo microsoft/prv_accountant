@@ -1,14 +1,44 @@
-# Project
+# Privacy Random Variable (PRV) Accountant
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+A fast algorithm to optimally compose privacy guarantees of differentially private (DP) algorithms to arbitrary accuracy.
+Our method is based on the notion of privacy loss random variables to quantify the privacy loss of DP algorithms.
+For more details see [[1](https://arxiv.org/abs/2106.02848)].
 
-As the maintainer of this project, please make a few updates:
+## Installation
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+```
+pip install git+https://github.com/microsoft/prv_accountant.git
+```
+
+## Examples
+
+Getting epsilon estimate directly from the command line.
+
+```
+compute-dp-epsilon --sampling-probability 5e-3 --noise-multiplier 0.8 --delta 1e-6 --iterations 1000
+```
+
+Or, use it in python code
+
+```python
+from prv_accountant import Accountant
+
+accountant = Accountant(
+	noise_multiplier=0.8,
+	sampling_probability=5e-3
+	delta=1e-6,
+	eps_error=0.1
+)
+
+eps_low, eps_estimate, eps_upper = accountant.compute_epsilon(iterations=1000)
+```
+
+For more examples, have a look in the `notebooks` directory.
+
+
+## References
+
+[1] Sivakanth Gopi, Yin Tat Lee, Lukas Wutschitz. Numerical Composition of Differential Privacy. arXiv. Preprint posted online June 5, 2021. [arXiv](https://arxiv.org/abs/2106.02848)
 
 ## Contributing
 
