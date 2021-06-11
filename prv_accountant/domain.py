@@ -14,16 +14,16 @@ class Domain:
         :param float shift: Amount by which this domain has been shifted
         """
         if not isinstance(size, int):
-            raise TypeError(f"`size` must be integer")
+            raise TypeError("`size` must be integer")
         if size % 2 != 0:
-            raise ValueError(f"Must have an even size")
+            raise ValueError("Must have an even size")
         self._t_min = t_min
         self._size = size
         self._dt = (t_max-t_min)/(size-1)
         self._shifts = shifts
 
     @abstractmethod
-    def create_aligned(t_min:float, t_max:float, dt:float) -> "Domain":
+    def create_aligned(t_min: float, t_max: float, dt: float) -> "Domain":
         """
         Create a domain instance that is aligned with the origin.
 
@@ -57,7 +57,7 @@ class Domain:
         return self.shift_right(-dt)
 
     def t(self, i: int) -> float:
-        return  self._t_min + i*self._dt
+        return self._t_min + i*self._dt
 
     def dt(self) -> float:
         return self._dt

@@ -67,11 +67,11 @@ class Accountant:
 
         domain = Domain.create_aligned(-L, L, mesh_size)
         if verbose:
-            print(f"Initialising FDP accountant")
+            print("Initialising FDP accountant")
             print(f"Domain = {domain}")
 
         prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(sampling_probability, noise_multiplier)
-        
+
         prv = PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max())
 
         self.f_0 = discretisers.CellCentred().discretise(prv, domain)
@@ -106,7 +106,9 @@ class Accountant:
                                            upper bound of true epsilon
         """
         f_n = self.composer.compute_composition(iterations)
-        eps_lower = optimize.root_scalar(lambda e: self.compute_delta_lower(f_n, e) - self.delta, bracket=(0, f_n.domain.t_max())).root
-        eps_upper = optimize.root_scalar(lambda e: self.compute_delta_upper(f_n, e) - self.delta, bracket=(0, f_n.domain.t_max())).root
+        eps_lower = optimize.root_scalar(
+            lambda e: self.compute_delta_lower(f_n, e) - self.delta, bracket=(0, f_n.domain.t_max())).root
+        eps_upper = optimize.root_scalar(
+            lambda e: self.compute_delta_upper(f_n, e) - self.delta, bracket=(0, f_n.domain.t_max())).root
         eps_avg = 0.5*(eps_lower+eps_upper)
         return eps_lower, eps_avg, eps_upper

@@ -5,6 +5,7 @@ import pytest
 
 from prv_accountant.domain import Domain
 
+
 class TestDomain:
     def test_create_aligned(self):
         d = Domain.create_aligned(-0.5, 0.5, 1)
@@ -15,12 +16,12 @@ class TestDomain:
         d = Domain.create_aligned(-0.5, 0.5, 0.5)
         assert len(d) == 4
         assert d.t_min() == pytest.approx(-0.5)
-        assert d.t_max() == pytest.approx( 1.0)
+        assert d.t_max() == pytest.approx(1.0)
 
         d = Domain.create_aligned(-0.1, 0.5, 0.5)
         assert len(d) == 4
         assert d.t_min() == pytest.approx(-0.5)
-        assert d.t_max() == pytest.approx( 1.0)
+        assert d.t_max() == pytest.approx(1.0)
 
         d = Domain.create_aligned(-0.6, 0.5, 0.5)
         assert len(d) == 4
@@ -47,6 +48,6 @@ class TestDomain:
         d2 = d1.shift_right(0.2)
 
         assert d2.t_min() == pytest.approx(-0.4)
-        assert d2.t_max() == pytest.approx( 0.7)
+        assert d2.t_max() == pytest.approx(0.7)
         assert len(d2) == len(d1)
         assert d2.dt() == pytest.approx(d1.dt())

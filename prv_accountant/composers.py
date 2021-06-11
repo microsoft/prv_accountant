@@ -16,7 +16,7 @@ class Composer(ABC):
 
 
 class Fourier(Composer):
-    def __init__(self, prv:DiscretePrivacyRandomVariable) -> None:
+    def __init__(self, prv: DiscretePrivacyRandomVariable) -> None:
         """
         Compute the composition of the PRVs using convolutions in Fourier space
 
@@ -39,8 +39,3 @@ class Fourier(Composer):
         domain = self.domain.shift_right(self.domain.shifts()*(num_compositions-1))
 
         return DiscretePrivacyRandomVariable(f_n, domain)
-        
-
-class RepeatedSquaring(Composer):
-    pass
-    # Not yet implemented

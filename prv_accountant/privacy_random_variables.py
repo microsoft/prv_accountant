@@ -37,8 +37,8 @@ class PrivacyRandomVariableTruncated:
         self.remaining_mass = self.prv.cdf(t_max) - self.prv.cdf(t_min)
 
     def mean(self) -> float:
-        Ls = [ self.t_min, -0.1, 0.1       ]
-        Rs = [       -0.1,  0.1, self.t_max]
+        Ls = [self.t_min, -0.1, 0.1]
+        Rs = [-0.1,  0.1, self.t_max]
         m = 0.0
         for L, R in zip(Ls, Rs):
             I, err = integrate.quad(self.cdf, L, R)
@@ -51,17 +51,16 @@ class PrivacyRandomVariableTruncated:
 
         return m
 
-
     def probability(self, a, b):
         a = np.clip(a, self.t_min, self.t_max)
         b = np.clip(b, self.t_min, self.t_max)
-        return self.prv.probability(a,b)/self.remaining_mass
+        return self.prv.probability(a, b) / self.remaining_mass
 
     def pdf(self, t):
-        return np.where(t<self.t_min, 0, np.where(t<self.t_max, self.prv.pdf(t)/self.remaining_mass, 0))
+        return np.where(t < self.t_min, 0, np.where(t < self.t_max, self.prv.pdf(t)/self.remaining_mass, 0))
 
     def cdf(self, t):
-        return np.where(t<self.t_min, 0, np.where(t<self.t_max, self.prv.cdf(t)/self.remaining_mass, 1))
+        return np.where(t < self.t_min, 0, np.where(t < self.t_max, self.prv.cdf(t)/self.remaining_mass, 1))
 
 
 class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
@@ -73,13 +72,16 @@ class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
         sigma = self.sigma
         p = self.p
         return np.where(t > 0, (
-            (1.0/2.0)*M_SQRT2*sigma*
-                exp(-1.0/2.0*pow(sigma, 2)*pow(t, 2) - pow(sigma, 2)*t*log((p + exp(t) - 1)*exp(-t)/p) - 1.0/2.0*pow(sigma, 2)*pow(log((p + exp(t) - 1)*exp(-t)/p), 2) + (3.0/2.0)*t - 1.0/8.0/pow(sigma, 2))/
-                    (sqrt(M_PI)*sqrt((p + exp(t) - 1)*exp(-t)/p)*(p + exp(t) - 1))
+            (1.0/2.0) * M_SQRT2 * sigma *
+            exp((
+                -1.0/2.0*pow(sigma, 2)*pow(t, 2) - pow(sigma, 2)*t*log((p + exp(t) - 1)*exp(-t)/p) -
+                1.0/2.0*pow(sigma, 2)*pow(log((p + exp(t) - 1)*exp(-t)/p), 2) + (3.0/2.0)*t - 1.0/8.0/pow(sigma, 2)
+            )) /
+            (sqrt(M_PI)*sqrt((p + exp(t) - 1)*exp(-t)/p)*(p + exp(t) - 1))
         ), np.where(t > log(1 - p), (
-                (1.0/2.0)*M_SQRT2*sigma*
-                    exp(-1.0/2.0*pow(sigma, 2)*pow(log((p + exp(t) - 1)/p), 2) + 2*t - 1.0/8.0/pow(sigma, 2))/
-                        (sqrt(M_PI)*sqrt((p + exp(t) - 1)/p)*(p + exp(t) - 1))
+                (1.0/2.0) * M_SQRT2 * sigma *
+                exp(-1.0/2.0*pow(sigma, 2)*pow(log((p + exp(t) - 1)/p), 2) + 2*t - 1.0/8.0/pow(sigma, 2)) /
+                (sqrt(M_PI)*sqrt((p + exp(t) - 1)/p)*(p + exp(t) - 1))
             ), 0)
         )
 
@@ -87,17 +89,17 @@ class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
         sigma = self.sigma
         p = self.p
         return np.where(t > 0, (
-            (1.0/2.0)*p*
-                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*
-                    (t + log((p + exp(t) - 1)*exp(-t)/p)) - 1)/sigma))) -
-            1.0/2.0*(p - 1)*
-                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*
-                    (t + log((p + exp(t) - 1)*exp(-t)/p)) + 1)/sigma))) + 1
+                (1.0/2.0) * p *
+                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2) *
+                                                     (t + log((p + exp(t) - 1)*exp(-t)/p)) - 1)/sigma))) -
+                1.0/2.0*(p - 1) *
+                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2) *
+                                  (t + log((p + exp(t) - 1)*exp(-t)/p)) + 1)/sigma))) + 1
             ), np.where(t > log(1 - p), (
-                (1.0/2.0)*p*
-                    (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*log((p + exp(t) - 1)/p) - 1)/sigma))) -
-                1.0/2.0*(p - 1)*
-                    (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*log((p + exp(t) - 1)/p) + 1)/sigma))) + 1
+                (1.0/2.0) * p *
+                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*log((p + exp(t) - 1)/p) - 1)/sigma))) -
+                1.0/2.0*(p - 1) *
+                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*log((p + exp(t) - 1)/p) + 1)/sigma))) + 1
             ), 0.0)
         )
 

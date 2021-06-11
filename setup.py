@@ -17,7 +17,7 @@ with open('requirements_extra.txt') as f:
 setuptools.setup(
     name='prv_accountant',
     version=version,
-    description='A fast algorithm to optimally compose privacy guarantees of differentially private (DP) mechanisms to arbitrary accuracy.',
+    description='A fast algorithm to optimally compose privacy guarantees of differentially private (DP) mechanisms to arbitrary accuracy.',  # noqa: E501
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/microsoft/prv_accountant',

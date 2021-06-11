@@ -41,7 +41,7 @@ class CellCentred(Discretiser):
         tR = tC + domain.dt()/2.0
         f = prv.probability(tL, tR)
 
-        mean_d = np.dot(tC,f)
+        mean_d = np.dot(tC, f)
         mean_c = prv.mean()
 
         mean_shift = mean_c - mean_d
