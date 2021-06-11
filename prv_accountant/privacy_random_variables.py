@@ -35,7 +35,6 @@ class PrivacyRandomVariableTruncated:
         self.t_min = t_min
         self.t_max = t_max
         self.remaining_mass = self.prv.cdf(t_max) - self.prv.cdf(t_min)
-        print(f"Truncation loses {1-self.remaining_mass} of mass")
 
     def mean(self) -> float:
         Ls = [ self.t_min, -0.1, 0.1       ]
