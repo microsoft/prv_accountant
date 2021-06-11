@@ -1,5 +1,9 @@
 # Privacy Random Variable (PRV) Accountant
 
+A fast algorithm to optimally compose privacy guarantees of differentially private (DP) algorithms to arbitrary accuracy.
+Our method is based on the notion of privacy loss random variables to quantify the privacy loss of DP algorithms.
+For more details see [[1](https://arxiv.org/abs/2106.02848)].
+
 ## Installation
 
 ```
@@ -8,9 +12,13 @@ pip install git+https://github.com/microsoft/prv_accountant.git
 
 ## Examples
 
+Getting epsilon estimate directly from the command line.
+
 ```
-compute-dp-epsilon
+compute-dp-epsilon --sampling-probability 5e-3 --noise-multiplier 0.8 --delta 1e-6 --iterations 1000
 ```
+
+Or, use it in python code
 
 ```python
 from prv_accountant import Accountant
