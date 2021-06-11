@@ -38,34 +38,34 @@ def arg_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = arg_parser().parse_args()
 
-    accountants = [
-        other_accountants.GDP(
-            noise_multiplier=args.noise_multiplier,
-            sampling_probability=args.sampling_probability,
-            delta=args.delta
-        ),
-        Accountant(
-            noise_multiplier=args.noise_multiplier,
-            sampling_probability=args.sampling_probability,
-            delta=args.delta,
-            max_iterations=args.iterations,
-            verbose=args.verbose,
-            eps_error=0.1
-        ),
-        other_accountants.RDP(
-            noise_multiplier=args.noise_multiplier,
-            sampling_probability=args.sampling_probability,
-            delta=args.delta
-        )
-    ]
+    accountants = {}
 
-    for accountant in accountants:
+    accountants["PRV Accountant"] = Accountant(
+        noise_multiplier=args.noise_multiplier,
+        sampling_probability=args.sampling_probability,
+        delta=args.delta,
+        max_iterations=args.iterations,
+        verbose=args.verbose,
+        eps_error=0.1
+    )
+    accountants["GDP Accountant"] = other_accountants.GDP(
+        noise_multiplier=args.noise_multiplier,
+        sampling_probability=args.sampling_probability,
+        delta=args.delta
+    )
+    accountants["RDP Accountant"] = other_accountants.RDP(
+        noise_multiplier=args.noise_multiplier,
+        sampling_probability=args.sampling_probability,
+        delta=args.delta
+    )
+ 
+ 
+    for name, accountant in accountants.items():
         try:
             eps_lower, eps_est, eps_upper = accountant.compute_epsilon(iterations=args.iterations)
-            print(f"{type(accountant).__name__}:\teps_lower = {eps_lower:6.3} eps_estimate = {eps_est:6.3}, eps_upper = {eps_upper:6.3} ")
+            print(f"{name}:\t\teps_lower = {eps_lower:6.3} eps_estimate = {eps_est:6.3}, eps_upper = {eps_upper:6.3} ")
         except Exception as e:
-            print(f"{type(accountant).__name__}:\tn/a")
-
+            print(f"{name}:\t\tn/a")
     return 0
 
 
