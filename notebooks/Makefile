@@ -1,7 +1,8 @@
 
 .PHONY: all
 all:
-	echo "Nothing to do here"
+	find *.ipynb -exec jupyter nbconvert --to notebook --inplace --execute {} +
+
 
 .PHONY: clean
 clean:
