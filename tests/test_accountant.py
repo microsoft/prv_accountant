@@ -20,7 +20,7 @@ class TestAccountant:
             sampling_probability=1.0,
             delta=1e-8,
             eps_error=0.01,
-            max_iterations=10000
+            max_compositions=10000
         )
 
         f_n = accountant.compute_compositions(10000)
