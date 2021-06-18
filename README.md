@@ -15,7 +15,7 @@ pip install git+https://github.com/microsoft/prv_accountant.git
 Getting epsilon estimate directly from the command line.
 
 ```
-compute-dp-epsilon --sampling-probability 5e-3 --noise-multiplier 0.8 --delta 1e-6 --iterations 1000
+compute-dp-epsilon --sampling-probability 5e-3 --noise-multiplier 0.8 --delta 1e-6 --num-compositions 1000
 ```
 
 Or, use it in python code
@@ -30,7 +30,7 @@ accountant = Accountant(
 	eps_error=0.1
 )
 
-eps_low, eps_estimate, eps_upper = accountant.compute_epsilon(iterations=1000)
+eps_low, eps_estimate, eps_upper = accountant.compute_epsilon(num_compositions=1000)
 ```
 
 For more examples, have a look in the `notebooks` directory.

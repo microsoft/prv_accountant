@@ -21,8 +21,8 @@ def arg_parser() -> argparse.ArgumentParser:
         help="A parameter which governs how much noise is added."
     )
     parser.add_argument(
-        "-i", "--iterations", type=int, required=True,
-        help="The number of iterations at which epsilon is computed."
+        "-i", "--num-compositions", type=int, required=True,
+        help="The number of compositions at which epsilon is computed."
     )
     parser.add_argument(
         "-d", "--delta", type=float, required=True,
@@ -44,7 +44,7 @@ def main() -> int:
         noise_multiplier=args.noise_multiplier,
         sampling_probability=args.sampling_probability,
         delta=args.delta,
-        max_iterations=args.iterations,
+        max_compositions=args.num_compositions,
         verbose=args.verbose,
         eps_error=0.1
     )
@@ -62,7 +62,7 @@ def main() -> int:
  
     for name, accountant in accountants.items():
         try:
-            eps_lower, eps_est, eps_upper = accountant.compute_epsilon(iterations=args.iterations)
+            eps_lower, eps_est, eps_upper = accountant.compute_epsilon(num_compositions=args.num_compositions)
             print(f"{name}:\t\teps_lower = {eps_lower:6.3} eps_estimate = {eps_est:6.3}, eps_upper = {eps_upper:6.3} ")
         except Exception as e:
             print(f"{name}:\t\tn/a")

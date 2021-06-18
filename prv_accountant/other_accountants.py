@@ -35,14 +35,8 @@ class RDP:
             noise_multiplier=self.noise_multiplier, steps=1,
             orders=self.orders)
 
-    def compute_epsilon(self, iterations: int) -> Tuple[float, float, float]:
-        """
-
-        :param int iterations:
-        :return: DP epsilon
-        :rtype: float
-        """
-        rdp_steps = self.rdp*iterations
+    def compute_epsilon(self, num_compositions: int) -> Tuple[float, float, float]:
+        rdp_steps = self.rdp*num_compositions
         eps, _, opt_order = rdp_accountant.get_privacy_spent(
             orders=self.orders, rdp=rdp_steps, target_eps=None,
             target_delta=self.delta)
@@ -67,10 +61,10 @@ class GDP:
 
         self.distribution = distribution
 
-    def compute_epsilon(self, iterations: int) -> Tuple[float, float, float]:
+    def compute_epsilon(self, num_compositions: int) -> Tuple[float, float, float]:
         batch_size = 1
         n = 1/self.sampling_probability
-        epoch = iterations / n
+        epoch = num_compositions / n
 
         if self.distribution == Distribution.UNIFORM:
             mu = gdp_accountant.compute_mu_uniform(

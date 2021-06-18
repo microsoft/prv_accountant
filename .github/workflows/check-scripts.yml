@@ -29,4 +29,4 @@ jobs:
         python -m pip install .
     - name: Run command line scripts
       run: |
-        compute-dp-epsilon --sampling-probability 5e-3 --noise-multiplier 0.8 --delta 1e-6 --iterations 1000
+        compute-dp-epsilon --sampling-probability 5e-3 --noise-multiplier 0.8 --delta 1e-6 --num-compositions 1000
