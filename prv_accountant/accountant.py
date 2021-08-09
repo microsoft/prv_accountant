@@ -91,7 +91,7 @@ class Accountant:
 
     def compute_delta(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
         t = f_n.domain.ts()
-        return np.where(t >= epsilon, f_n.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum()
+        return float(np.where(t >= epsilon, f_n.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
 
     def compute_epsilon(self, num_compositions: int) -> Tuple[float, float, float]:
         """

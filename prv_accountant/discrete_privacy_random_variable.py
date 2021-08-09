@@ -6,6 +6,8 @@ from dataclasses import dataclass
 
 from .domain import Domain
 
+from typing import Tuple
+
 
 @dataclass
 class DiscretePrivacyRandomVariable:
@@ -16,7 +18,7 @@ class DiscretePrivacyRandomVariable:
         assert len(self.pmf) == len(self.domain)
         return len(self.pmf)
 
-    def compute_epsilon(self, delta, delta_error, epsilon_error):
+    def compute_epsilon(self, delta: float, delta_error: float, epsilon_error: float) -> Tuple[float, float, float]:
         t = self.domain.ts()
         p = self.pmf
         d1 = np.flip(np.flip(p).cumsum())
@@ -32,4 +34,4 @@ class DiscretePrivacyRandomVariable:
         eps_upper = find_epsilon(delta - delta_error) + epsilon_error
         eps_lower = find_epsilon(delta + delta_error) - epsilon_error
         eps_estimate = find_epsilon(delta)
-        return eps_lower, eps_estimate, eps_upper
+        return float(eps_lower), float(eps_estimate), float(eps_upper)
