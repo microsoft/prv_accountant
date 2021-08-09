@@ -88,20 +88,11 @@ class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
     def cdf(self, t):
         sigma = self.sigma
         p = self.p
-        return np.where(t > 0, (
-                (1.0/2.0) * p *
-                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2) *
-                                                     (t + log((p + exp(t) - 1)*exp(-t)/p)) - 1)/sigma))) -
-                1.0/2.0*(p - 1) *
-                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2) *
-                                  (t + log((p + exp(t) - 1)*exp(-t)/p)) + 1)/sigma))) + 1
-            ), np.where(t > log(1 - p), (
-                (1.0/2.0) * p *
-                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*log((p + exp(t) - 1)/p) - 1)/sigma))) -
-                1.0/2.0*(p - 1) *
-                (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*log((p + exp(t) - 1)/p) + 1)/sigma))) + 1
+        z = np.where(t>0, log((p-1)/p + exp(t)/p), log((p-1)/p + exp(t)/p))
+        return np.where(t > log(1 - p), (
+                (1.0/2.0) * p * (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*z - 1)/sigma))) -
+                1.0/2.0*(p - 1) * (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*z + 1)/sigma))) + 1
             ), 0.0)
-        )
 
     def mean(self):
         raise NotImplementedError("Mean computation not implemented")
