@@ -6,7 +6,12 @@ import math
 import pytest
 import numpy as np
 
-from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism
+from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log
+
+def test_safe_log():
+    assert np.isnan(log(-1)) == True
+    assert np.isneginf(log(0)) == True
+    assert log(1) == pytest.approx(0)
 
 
 def reference_sf(t, sigma, p):
