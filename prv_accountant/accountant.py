@@ -90,11 +90,8 @@ class Accountant:
         return self.compute_delta(f_n, epsilon+self.eps_error)-self.delta_error
 
     def compute_delta(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
-        delta = 0.0
-        for t_i, p_n_i in zip(f_n.domain, f_n.pmf):
-            if t_i >= epsilon:
-                delta += p_n_i*(1.0 - np.exp(epsilon)*np.exp(-t_i))
-        return np.float64(delta)
+        t = f_n.domain.ts()
+        return float(np.where(t >= epsilon, f_n.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
 
     def compute_epsilon(self, num_compositions: int) -> Tuple[float, float, float]:
         """
@@ -106,9 +103,4 @@ class Accountant:
                                            upper bound of true epsilon
         """
         f_n = self.composer.compute_composition(num_compositions=num_compositions)
-        eps_lower = optimize.root_scalar(
-            lambda e: self.compute_delta_lower(f_n, e) - self.delta, bracket=(0, f_n.domain.t_max())).root
-        eps_upper = optimize.root_scalar(
-            lambda e: self.compute_delta_upper(f_n, e) - self.delta, bracket=(0, f_n.domain.t_max())).root
-        eps_avg = 0.5*(eps_lower+eps_upper)
-        return eps_lower, eps_avg, eps_upper
+        return f_n.compute_epsilon(self.delta, self.delta_error, self.eps_error)
