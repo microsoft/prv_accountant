@@ -4,12 +4,19 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from scipy import integrate
-from numpy import exp, log, sqrt
+from numpy import exp, sqrt
 from numpy import power as pow
 from scipy.special import erfc
 
 M_SQRT2 = sqrt(np.float128(2))
 M_PI = np.pi
+
+
+def log(x):
+    valid = (x > 0)
+    x_is_0 = (x == 0)
+    return np.where(valid, np.log(np.where(valid, x, 1)), 
+        np.where(x_is_0, -np.inf, np.nan))
 
 
 class PrivacyRandomVariable(ABC):
