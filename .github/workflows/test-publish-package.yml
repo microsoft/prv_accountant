@@ -2,9 +2,7 @@ name: Test-publish package
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ add_pypi ]
 
 jobs:
   deploy:
