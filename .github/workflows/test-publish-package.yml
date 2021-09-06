@@ -2,7 +2,7 @@ name: Test-publish package
 
 on:
   push:
-    branches: [ add_pypi ]
+    branches: [ luwutsch/add_pypi ]
 
 jobs:
   deploy:
