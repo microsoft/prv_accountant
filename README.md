@@ -7,7 +7,7 @@ For more details see [[1](https://arxiv.org/abs/2106.02848)].
 ## Installation
 
 ```
-pip install git+https://github.com/microsoft/prv_accountant.git
+pip install prv-accountant
 ```
 
 ## Examples
@@ -25,7 +25,7 @@ from prv_accountant import Accountant
 
 accountant = Accountant(
 	noise_multiplier=0.8,
-	sampling_probability=5e-3
+	sampling_probability=5e-3,
 	delta=1e-6,
 	eps_error=0.1,
 	max_compositions=1000
