@@ -54,7 +54,7 @@ class TestPrivacyRandomVariable:
         sigma = 1.0
         Q = PoissonSubsampledGaussianMechanism(p, sigma)
 
-        t = np.linspace(-10.0, 10.0, 2000000, dtype=np.float128)
+        t = np.linspace(-10.0, 10.0, 2000000, dtype=np.longdouble)
         dt = t[1] - t[0]
 
         t_L = t - dt/2.0
