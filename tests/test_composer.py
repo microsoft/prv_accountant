@@ -14,7 +14,7 @@ from prv_accountant.domain import Domain
 class TestFourier:
     def test_unity(self):
         domain = Domain(0, 100, 100)
-        pmf = binom.pmf(domain.ts().astype(np.float64), 100, 0.4)
+        pmf = binom.pmf(domain.ts().astype(np.double), 100, 0.4)
         prv = DiscretePrivacyRandomVariable(pmf, domain)
 
         composer = composers.Fourier(prv)
