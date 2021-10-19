@@ -1,12 +1,13 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+from typing import AsyncContextManager
 import scipy
 import math
 import pytest
 import numpy as np
 
-from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log
+from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log, PrivacyRandomVariableTruncated
 
 def test_safe_log():
     assert np.isnan(log(-1)) == True
@@ -62,3 +63,19 @@ class TestPrivacyRandomVariable:
 
         pdf = Q.probability(t_L, t_R)
         assert pdf.sum() == pytest.approx(1.0, 1e-10)
+
+
+class TestPrivacyRandomVariableTruncated:
+    def test_robustness(self):
+        p = 0.00011878424327013022
+        mu = 0.2
+
+        prv = PrivacyRandomVariableTruncated(
+            prv=PoissonSubsampledGaussianMechanism(
+                sampling_probability=p, noise_multiplier=mu
+            ),
+            t_min=-134.4230546183631,
+            t_max=134.42325451405242
+        )
+
+        assert prv.mean() > 1e-4
