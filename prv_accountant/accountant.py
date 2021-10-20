@@ -54,15 +54,11 @@ class Accountant:
             self.eps_error = eps_error
             mesh_size = 2*eps_error / np.sqrt(2*max_compositions*np.log(2/eta0))
 
-        rdp = RDP(
-            noise_multiplier=noise_multiplier,
-            sampling_probability=sampling_probability,
-            delta=self.delta_error/4)
+        prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(sampling_probability, noise_multiplier)
+        
+        rdp = RDP(prv=prv, delta=self.delta_error/4)
         L = self.eps_error + rdp.compute_epsilon(max_compositions)[2]
-        rdp = RDP(
-            noise_multiplier=noise_multiplier,
-            sampling_probability=sampling_probability,
-            delta=self.delta_error/8/max_compositions)
+        rdp = RDP(prv=prv, delta=self.delta_error/8/max_compositions)
         L = 3 + max(L, rdp.compute_epsilon(1)[2])
 
         domain = Domain.create_aligned(-L, L, mesh_size)
@@ -70,11 +66,9 @@ class Accountant:
             print("Initialising FDP accountant")
             print(f"Domain = {domain}")
 
-        prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(sampling_probability, noise_multiplier)
+        prv_trunc = PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max())
 
-        prv = PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max())
-
-        self.f_0 = discretisers.CellCentred().discretise(prv, domain)
+        self.f_0 = discretisers.CellCentred().discretise(prv_trunc, domain)
 
         self.composer = composers.Fourier(self.f_0)
 
