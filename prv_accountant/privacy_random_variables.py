@@ -4,7 +4,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import math
-import six
 from scipy import integrate
 from numpy import exp, sqrt
 from numpy import power as pow
@@ -149,8 +148,6 @@ def _log_comb(n, k):
 
 def _compute_log_a_int(q, sigma, alpha):
     """Compute log(A_alpha) for integer alpha. 0 < q < 1."""
-    assert isinstance(alpha, six.integer_types)
-
     # Initialize with 0 in the log space.
     log_a = -np.inf
 
