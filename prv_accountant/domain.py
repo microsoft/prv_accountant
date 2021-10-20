@@ -78,7 +78,7 @@ class Domain:
 
     def ts(self) -> np.ndarray:
         """Array of all node coordinates in the domain"""
-        return np.linspace(self._t_min, self.t_max(), self._size, dtype=np.float128, endpoint=True)
+        return np.linspace(self._t_min, self.t_max(), self._size, dtype=np.longdouble, endpoint=True)
 
     def __len__(self) -> int:
         return self._size

@@ -4,12 +4,19 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from scipy import integrate
-from numpy import exp, log, sqrt
+from numpy import exp, sqrt
 from numpy import power as pow
 from scipy.special import erfc
 
-M_SQRT2 = sqrt(np.float128(2))
+M_SQRT2 = sqrt(np.longdouble(2))
 M_PI = np.pi
+
+
+def log(x):
+    valid = (x > 0)
+    x_is_0 = (x == 0)
+    return np.where(valid, np.log(np.where(valid, x, 1)), 
+        np.where(x_is_0, -np.inf, np.nan))
 
 
 class PrivacyRandomVariable(ABC):
@@ -65,8 +72,8 @@ class PrivacyRandomVariableTruncated:
 
 class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
     def __init__(self, sampling_probability: float, noise_multiplier: float) -> None:
-        self.p = np.float128(sampling_probability)
-        self.sigma = np.float128(noise_multiplier)
+        self.p = np.longdouble(sampling_probability)
+        self.sigma = np.longdouble(noise_multiplier)
 
     def pdf(self, t):
         sigma = self.sigma
@@ -90,8 +97,8 @@ class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
         p = self.p
         z = np.where(t>0, log((p-1)/p + exp(t)/p), log((p-1)/p + exp(t)/p))
         return np.where(t > log(1 - p), (
-                (1.0/2.0) * p * (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*z - 1)/sigma))) -
-                1.0/2.0*(p - 1) * (-erfc(np.float64((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*z + 1)/sigma))) + 1
+                (1.0/2.0) * p * (-erfc(np.double((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*z - 1)/sigma))) -
+                1.0/2.0*(p - 1) * (-erfc(np.double((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*z + 1)/sigma))) + 1
             ), 0.0)
 
     def mean(self):
