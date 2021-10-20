@@ -25,7 +25,7 @@ setuptools.setup(
             "tqdm",
             "jupyter",
             "sympy",
-            "tensorflow-privacy"
+            "tensorflow-privacy",
             "nbconvert",
             "pandas",
             "pytest"
