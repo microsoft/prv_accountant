@@ -8,12 +8,6 @@ version = '0.1.0a2'
 with open('README.md') as f:
     long_description = f.read()
 
-with open('requirements.txt') as f:
-    requirements = f.readlines()
-
-with open('requirements_extra.txt') as f:
-    requirements_extra = f.readlines()
-
 setuptools.setup(
     name='prv_accountant',
     version=version,
