@@ -4,8 +4,16 @@
 
 import sys
 import argparse
+import warnings
 
-from prv_accountant import Accountant, other_accountants
+from prv_accountant import Accountant, other_accountants, privacy_random_variables
+
+try:
+    sys.skip_tf_privacy_import = True
+    from tensorflow_privacy.privacy.analysis import rdp_accountant, gdp_accountant
+    TF_PRIVACY_AVAILABLE = True
+except ImportError:
+    TF_PRIVACY_AVAILABLE = False
 
 
 def arg_parser() -> argparse.ArgumentParser:
@@ -38,9 +46,14 @@ def arg_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = arg_parser().parse_args()
 
-    accountants = {}
+    prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(
+        sampling_probability=args.sampling_probability,
+        noise_multiplier=args.noise_multiplier
+    )
 
-    accountants["PRV Accountant"] = Accountant(
+    methods = {}
+
+    prv_acc = Accountant(
         noise_multiplier=args.noise_multiplier,
         sampling_probability=args.sampling_probability,
         delta=args.delta,
@@ -48,21 +61,26 @@ def main() -> int:
         verbose=args.verbose,
         eps_error=0.1
     )
-    accountants["GDP Accountant"] = other_accountants.GDP(
-        noise_multiplier=args.noise_multiplier,
-        sampling_probability=args.sampling_probability,
-        delta=args.delta
-    )
-    accountants["RDP Accountant"] = other_accountants.RDP(
-        noise_multiplier=args.noise_multiplier,
-        sampling_probability=args.sampling_probability,
-        delta=args.delta
-    )
+    methods["PRV Accountant"] = lambda steps: prv_acc.compute_epsilon(steps)
+
+    rdp_acc = other_accountants.RDP(prv=prv, delta=args.delta)
+    methods["RDP Accountant"] = lambda steps: rdp_acc.compute_epsilon(steps)
+
+    if TF_PRIVACY_AVAILABLE:
+        def compute_eps_gdp(steps):
+            batch_size = 1000
+            n = batch_size/args.sampling_probability
+            epoch = steps*args.sampling_probability
+            eps = gdp_accountant.compute_eps_poisson(epoch, args.noise_multiplier, n, batch_size, args.delta)
+            return 0.0, eps, float('inf')
+        methods["GDP Accountant"] = compute_eps_gdp
+    else:
+        warnings.warn("Install TF privacy for more accountants.")
  
  
-    for name, accountant in accountants.items():
+    for name, compute_eps in methods.items():
         try:
-            eps_lower, eps_est, eps_upper = accountant.compute_epsilon(num_compositions=args.num_compositions)
+            eps_lower, eps_est, eps_upper = compute_eps(args.num_compositions)
             print(f"{name}:\t\teps_lower = {eps_lower:6.3} eps_estimate = {eps_est:6.3}, eps_upper = {eps_upper:6.3} ")
         except Exception as e:
             print(f"{name}:\t\tn/a")
