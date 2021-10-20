@@ -1,3 +1,0 @@
-numpy
-scipy
-tensorflow_privacy==0.5.1
