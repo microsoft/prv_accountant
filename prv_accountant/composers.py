@@ -5,6 +5,8 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 from scipy.fft import rfft, irfft
+from scipy.signal import convolve
+from typing import Sequence
 
 from .discrete_privacy_random_variable import DiscretePrivacyRandomVariable
 
@@ -39,3 +41,17 @@ class Fourier(Composer):
         domain = self.domain.shift_right(self.domain.shifts()*(num_compositions-1))
 
         return DiscretePrivacyRandomVariable(f_n, domain)
+
+
+class Heterogenous(Composer):
+    def __init__(self, prvs: Sequence[DiscretePrivacyRandomVariable]) -> None:
+        if any(prv.domain != prvs[0].domain for prv in prvs):
+            raise ValueError("We can only compose on the same domain")
+        self.prvs = prvs
+        self.domain = self.prv[0].domain
+
+    def compute_composition(self) -> DiscretePrivacyRandomVariable:
+        f_n = self.prvs[0].pmf
+        for f_i in self.prvs[1:]:
+            f_n = convolve(f_n, f_i, mode="same")
+        return DiscretePrivacyRandomVariable(f_n, self.domain)
