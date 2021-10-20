@@ -26,9 +26,21 @@ setuptools.setup(
     python_requires=">=3.7.0",
     include_package_data=True,
     extras_require={
-        "extra": requirements_extra
+        "extra": [
+            "plotly",
+            "tqdm",
+            "jupyter",
+            "sympy",
+            "tensorflow-privacy"
+            "nbconvert",
+            "pandas",
+            "pytest"
+        ]
     },
-    install_requires=requirements,
+    install_requires=[
+        "numpy",
+        "scipy"
+    ],
     scripts=[
         'bin/compute-dp-epsilon',
     ],

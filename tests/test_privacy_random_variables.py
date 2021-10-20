@@ -5,6 +5,7 @@ import scipy
 import math
 import pytest
 import numpy as np
+import sys
 
 from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log
 
@@ -30,7 +31,7 @@ def reference_sf(t, sigma, p):
         return 1
 
 
-class TestPrivacyRandomVariable:
+class TestPoissonSubsampledGaussianMechanism:
     def test_sf(self):
         p = 1e-2
         sigma = 1.0
@@ -62,3 +63,25 @@ class TestPrivacyRandomVariable:
 
         pdf = Q.probability(t_L, t_R)
         assert pdf.sum() == pytest.approx(1.0, 1e-10)
+
+    def test_rdp(self):
+        """
+        Compare to TF-privacy
+        """
+        # Opting out of loading all sibling packages and their dependencies.
+        try:
+            sys.skip_tf_privacy_import = True
+            from tensorflow_privacy.privacy.analysis import rdp_accountant  # noqa: E402
+        except ImportError:
+            pytest.skip("Tensorflow-privacy no available.")
+
+        p = 1e-2
+        sigma = 1.0
+        orders = [1.0 + x / 10.0 for x in range(1, 100)] + list(range(12, 64))
+
+        Q = PoissonSubsampledGaussianMechanism(p, sigma)
+
+        rdp = [Q.rdp(a) for a in orders]
+        rdp_tf = rdp_accountant.compute_rdp(p, sigma, 1, orders)
+
+        np.testing.assert_array_almost_equal(rdp, rdp_tf)
