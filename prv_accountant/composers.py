@@ -48,10 +48,11 @@ class Heterogenous(Composer):
         if any(prv.domain != prvs[0].domain for prv in prvs):
             raise ValueError("We can only compose on the same domain")
         self.prvs = prvs
-        self.domain = self.prv[0].domain
+        self.domain = self.prvs[0].domain
 
     def compute_composition(self) -> DiscretePrivacyRandomVariable:
         f_n = self.prvs[0].pmf
-        for f_i in self.prvs[1:]:
-            f_n = convolve(f_n, f_i, mode="same")
+        # TODO change this algorithm based on tree reduction
+        for prv_i in self.prvs[1:]:
+            f_n = convolve(f_n, prv_i.pmf, mode="same")
         return DiscretePrivacyRandomVariable(f_n, self.domain)

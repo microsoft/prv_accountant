@@ -36,7 +36,7 @@ class AbstractAccountant(ABC):
 
 class PRVAccountantHomogeneous:
     def __init__(self, prv: PrivacyRandomVariable, delta: float, eps_error: float, max_compositions: int,
-                 eps_max: Optional[float]):
+                 eps_max: Optional[float] = None):
         self.eps_error = eps_error
         self.delta = delta
         self.delta_error = delta/1000.0
@@ -58,6 +58,12 @@ class PRVAccountantHomogeneous:
 
     def compute_epsilon(self, num_compositions: int) -> Tuple[float, float, float]:
         return self.composer.compute_composition(num_compositions).compute_epsilon(self.delta, self.delta_error, self.eps_error)
+
+    def compute_delta_upper(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
+        return f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error
+
+    def compute_delta_lower(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
+        return f_n.compute_delta_estimate(epsilon+self.eps_error)-self.delta_error
 
 
 class PRVAccountantHeterogenous(AbstractAccountant):
@@ -95,11 +101,21 @@ class PRVAccountantHeterogenous(AbstractAccountant):
         f_n = composers.Heterogenous(f_n_s).compute_composition()
         return f_n.compute_epsilon(self.delta, self.delta_error, self.eps_error)
 
+    def compute_delta_upper(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
+        return f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error
+
+    def compute_delta_lower(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
+        return f_n.compute_delta_estimate(epsilon+self.eps_error)-self.delta_error
+
 
 class DPSGDAccountant(PRVAccountantHomogeneous):
-    def __init__(self, sampling_probability):
-        prv = privacy_random_variables.PoissonSubsampledGaussianMechanism()
-        super().__init__(prv=prv)
+    def __init__(self, noise_multiplier: float, sampling_probability: float,
+                 delta: float, max_compositions: int, eps_error: float = None) -> None:
+        prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(
+            sampling_probability=sampling_probability, noise_multiplier=noise_multiplier
+        )
+        super().__init__(prv=prv, delta=delta, max_compositions=max_compositions, eps_error=eps_error)
+                        
 
 
 class Accountant(DPSGDAccountant):
@@ -107,10 +123,12 @@ class Accountant(DPSGDAccountant):
                  delta: float, max_compositions: int, eps_error: float = None,
                  mesh_size: float = None, verbose: bool = False) -> None:
         warnings.warn("`Accountant` will be deprecated. Use `DPSGDAccountant` instead.", DeprecationWarning)
-        super().__init__(noise_multiplier)
+        assert mesh_size is None
+        super().__init__(noise_multiplier=noise_multiplier, sampling_probability=sampling_probability,
+                         delta=delta, max_compositions=max_compositions, eps_error=eps_error)
       
 
-class Accountant:
+class _Accountant:
     def __init__(self, noise_multiplier: float, sampling_probability: float,
                  delta: float, max_compositions: int, eps_error: float = None,
                  mesh_size: float = None, verbose: bool = False) -> None:
