@@ -84,22 +84,26 @@ class PRVAccountantHeterogenous(AbstractAccountant):
             L = eps_max
             warnings.warn(f"Assuming that true epsilon < {eps_max}. If this is not a valid assumption set `eps_max=None`.")
         else:
-            L = compute_safe_domain_size(prvs, self.eps_error, self.delta_error, max_compositions)
+            L = compute_safe_domain_size(self.prvs, self.eps_error, self.delta_error, max_compositions)
 
         eta0 = self.delta_error/3
         mesh_size = 2*eps_error / np.sqrt(2*max_compositions*np.log(2/eta0))
         domain = Domain.create_aligned(-L, L, mesh_size)
-        self.dprvs = [ discretisers.CellCentred().discretise(prv, domain) for prv in self.prvs]
+        prvs_trunc = [ PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max()) for prv in self.prvs ]
+        self.dprvs = [ discretisers.CellCentred().discretise(prv, domain) for prv in prvs_trunc ]
 
     def compute_epsilon(self, num_compositions: Optional[int] = None) -> Tuple[float, float, float]:
         """
         :param Optional[int] num_compositions: This value cannot be used with heterogenous composition
         """
         assert num_compositions is None
+        f_n = self.compute_composition()
+        return f_n.compute_epsilon(self.delta, self.delta_error, self.eps_error)
 
+    def compute_composition(self) -> DiscretePrivacyRandomVariable:
         f_n_s = [composers.Fourier(dprv).compute_composition(n) for dprv, n in zip(self.dprvs, self.n_comp)]
         f_n = composers.Heterogenous(f_n_s).compute_composition()
-        return f_n.compute_epsilon(self.delta, self.delta_error, self.eps_error)
+        return f_n
 
     def compute_delta_upper(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
         return f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error
@@ -116,7 +120,6 @@ class DPSGDAccountant(PRVAccountantHomogeneous):
         )
         super().__init__(prv=prv, delta=delta, max_compositions=max_compositions, eps_error=eps_error)
                         
-
 
 class Accountant(DPSGDAccountant):
     def __init__(self, noise_multiplier: float, sampling_probability: float,
