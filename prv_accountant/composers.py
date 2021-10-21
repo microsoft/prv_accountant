@@ -45,14 +45,13 @@ class Fourier(Composer):
 
 class Heterogenous(Composer):
     def __init__(self, prvs: Sequence[DiscretePrivacyRandomVariable]) -> None:
-        if any(prv.domain != prvs[0].domain for prv in prvs):
-            raise ValueError("We can only compose on the same domain")
         self.prvs = prvs
-        self.domain = self.prvs[0].domain
 
     def compute_composition(self) -> DiscretePrivacyRandomVariable:
         f_n = self.prvs[0].pmf
+        domain_n = self.prvs[0].domain
         # TODO change this algorithm based on tree reduction
         for prv_i in self.prvs[1:]:
             f_n = convolve(f_n, prv_i.pmf, mode="same")
-        return DiscretePrivacyRandomVariable(f_n, self.domain)
+            domain_n = domain_n.shift_right(prv_i.domain.shifts())
+        return DiscretePrivacyRandomVariable(f_n, domain_n)
