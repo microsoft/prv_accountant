@@ -22,26 +22,26 @@ def log(x):
 
 
 class PrivacyRandomVariable(ABC):
-    @abstractmethod
     def mean(self) -> float:
-        pass
+        """Compute the mean of the random variable."""
+        raise NotImplementedError(f"{type(self)} has not provided an implementation for a mean computation.")
 
     def probability(self, a, b):
+        """Compute the probability mass on the interval [a, b]."""
         return self.cdf(b) - self.cdf(a)
 
-    @abstractmethod
     def pdf(self, t):
-        pass
+        """Compute the probability density function of this random variable at point t."""
+        raise NotImplementedError(f"{type(self)} has not provided an implementation for a pdf.")
 
     @abstractmethod
     def cdf(self, t):
+        """Compute the cumulative distribution function of this random variable at point t."""
         pass
 
     def rdp(self, alpha: float) -> float:
-        """
-        Compute RDP of this mechanism of order alpha
-        """
-        raise NotImplementedError()
+        """Compute RDP of this mechanism of order alpha."""
+        raise NotImplementedError(f"{type(self)} has not provided an implementation for rdp.")
 
         
 class PrivacyRandomVariableTruncated:
