@@ -47,7 +47,7 @@ class CellCentred(Discretiser):
         mean_shift = mean_c - mean_d
 
         if not (np.abs(mean_shift) < domain.dt()/2):
-            raise RuntimeError("Discrete mean differs from continous mean by too much.")
+            raise RuntimeError("Discrete mean differs from continuous mean significantly.")
 
         domain_shifted = domain.shift_right(mean_shift)
 
