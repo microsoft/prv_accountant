@@ -8,12 +8,6 @@ version = '0.1.0'
 with open('README.md') as f:
     long_description = f.read()
 
-with open('requirements.txt') as f:
-    requirements = f.readlines()
-
-with open('requirements_extra.txt') as f:
-    requirements_extra = f.readlines()
-
 setuptools.setup(
     name='prv_accountant',
     version=version,
@@ -26,9 +20,21 @@ setuptools.setup(
     python_requires=">=3.7.0",
     include_package_data=True,
     extras_require={
-        "extra": requirements_extra
+        "extra": [
+            "plotly",
+            "tqdm",
+            "jupyter",
+            "sympy",
+            "tensorflow-privacy",
+            "nbconvert",
+            "pandas",
+            "pytest"
+        ]
     },
-    install_requires=requirements,
+    install_requires=[
+        "numpy",
+        "scipy"
+    ],
     scripts=[
         'bin/compute-dp-epsilon',
     ],
