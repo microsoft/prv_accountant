@@ -48,10 +48,18 @@ class Heterogenous(Composer):
         self.prvs = prvs
 
     def compute_composition(self) -> DiscretePrivacyRandomVariable:
-        f_n = self.prvs[0].pmf
-        domain_n = self.prvs[0].domain
-        # TODO change this algorithm based on tree reduction
-        for prv_i in self.prvs[1:]:
-            f_n = convolve(f_n, prv_i.pmf, mode="same")
-            domain_n = domain_n.shift_right(prv_i.domain.shifts())
-        return DiscretePrivacyRandomVariable(f_n, domain_n)
+        prvs = self.prvs
+        while len(prvs) > 1:
+            if len(prvs) % 2 == 1:
+                prvs_conv = [prvs.pop(0)]
+            else:
+                prvs_conv = []
+            for prv_L, prv_R in zip(prvs[:-1:2], prvs[1::2]):
+                prvs_conv.append(self.add_prvs(prv_L, prv_R))
+            prvs = prvs_conv
+        return prvs[0]
+
+    def add_prvs(self, prv_L: DiscretePrivacyRandomVariable, prv_R: DiscretePrivacyRandomVariable) -> DiscretePrivacyRandomVariable:
+        f = convolve(prv_L.pmf, prv_R.pmf, mode="same")
+        domain = prv_L.domain.shift_right(prv_R.domain.shifts())
+        return DiscretePrivacyRandomVariable(f, domain)
