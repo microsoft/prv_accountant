@@ -22,6 +22,14 @@ class Domain:
         self._dt = (t_max-t_min)/(size-1)
         self._shifts = shifts
 
+    def __eq__(self, o: "Domain") -> bool:
+        return (
+            self._t_min == o._t_min and
+            self._size == o._size and
+            self._shifts == o._shifts and
+            self._dt == o._dt
+        )
+
     @abstractmethod
     def create_aligned(t_min: float, t_max: float, dt: float) -> "Domain":
         """
