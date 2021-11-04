@@ -23,7 +23,7 @@ class TestDPSGDAccountant:
             max_compositions=10000
         )
 
-        f_n = accountant.composer.compute_composition(10000)
+        f_n = accountant.compute_composition(10000)
         delta_upper = accountant.compute_delta_upper(f_n, 4+0.01)
         delta_lower = accountant.compute_delta_lower(f_n, 4-0.01)
 
@@ -35,7 +35,7 @@ class TestDPSGDAccountant:
 class TestPRVAccountantHeterogenous:
     def test_analytic_solution(self):
         prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(sampling_probability=1.0, noise_multiplier=10.0)
-        accountant = PRVAccountantHeterogenous(prvs=[prv]*100, delta=1e-8, eps_error=0.01)
+        accountant = PRVAccountantHeterogenous(prvs=[prv]*100, eps_error=0.01, delta_error=1e-12)
 
         f_n = accountant.compute_composition()
         delta_upper = accountant.compute_delta_upper(f_n, 4+0.01)
