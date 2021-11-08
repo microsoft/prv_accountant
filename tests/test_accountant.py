@@ -40,4 +40,5 @@ class TestAccountant:
                 eps_error=0.01,
                 max_compositions=10000
             )
+            accountant.compute_epsilon(1000)
 
