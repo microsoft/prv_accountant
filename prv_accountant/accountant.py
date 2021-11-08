@@ -12,18 +12,24 @@ from . import discretisers
 from . import composers
 from .domain import Domain
 from .discrete_privacy_random_variable import DiscretePrivacyRandomVariable
-from .privacy_random_variables import PrivacyRandomVariableTruncated, PrivacyRandomVariable
+from .privacy_random_variables import NoRDPImplementation, PrivacyRandomVariableTruncated, PrivacyRandomVariable
 from . import privacy_random_variables
 
 
 def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], eps_error: float, delta_error: float, max_compositions: int) -> float:
     L = 0
-    for prv in prvs:
-        rdp = RDP(prv=prv, delta=delta_error/4)
-        L = max(L, rdp.compute_epsilon(max_compositions)[2])
-        rdp = RDP(prv=prv, delta=delta_error/8/max_compositions)
-        L = max(L, rdp.compute_epsilon(1)[2])
-    L += eps_error + 3
+    try:
+        for prv in prvs:
+            rdp = RDP(prv=prv, delta=delta_error/4)
+            L = max(L, rdp.compute_epsilon(max_compositions)[2])
+            rdp = RDP(prv=prv, delta=delta_error/8/max_compositions)
+            L = max(L, rdp.compute_epsilon(1)[2])
+        L += eps_error + 3
+    except privacy_random_variables.NoRDPImplementation as e:
+        raise NoRDPImplementation(
+            "No implementation for RDP provided for this PRV. "
+            "Either provide a RDP implementation or set `eps_max` in the accountant."
+        ) from e
     return L
 
 

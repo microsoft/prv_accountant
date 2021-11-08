@@ -21,6 +21,10 @@ def log(x):
         np.where(x_is_0, -np.inf, np.nan))
 
 
+class NoRDPImplementation(NotImplementedError):
+    pass
+
+
 class PrivacyRandomVariable(ABC):
     def mean(self) -> float:
         """Compute the mean of the random variable."""
@@ -41,7 +45,7 @@ class PrivacyRandomVariable(ABC):
 
     def rdp(self, alpha: float) -> float:
         """Compute RDP of this mechanism of order alpha."""
-        raise NotImplementedError(f"{type(self)} has not provided an implementation for rdp.")
+        raise NoRDPImplementation(f"{type(self)} has not provided an implementation for rdp.")
 
         
 class PrivacyRandomVariableTruncated:
