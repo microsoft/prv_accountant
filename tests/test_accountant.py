@@ -30,3 +30,14 @@ class TestAccountant:
         delta_exact = compute_delta_exact(4, 10000, 100.0)
         assert delta_upper == pytest.approx(delta_exact, rel=1e-3)
         assert delta_lower == pytest.approx(delta_exact, rel=1e-3)
+
+    def test_throw_error_small_delta(self):
+        with pytest.raises(ValueError):
+            accountant = Accountant(
+                noise_multiplier=4,
+                sampling_probability=0.00038,
+                delta=1.13e-18,
+                eps_error=0.01,
+                max_compositions=10000
+            )
+

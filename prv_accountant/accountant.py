@@ -66,6 +66,10 @@ class Accountant:
             print("Initialising FDP accountant")
             print(f"Domain = {domain}")
 
+        if np.finfo(np.longdouble).eps*len(domain) > self.delta - self.delta_error:
+            raise ValueError("Floating point errors will dominate for such small values of delta. "
+                             "Increase delta or reduce domain size.")
+
         prv_trunc = PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max())
 
         self.f_0 = discretisers.CellCentred().discretise(prv_trunc, domain)
