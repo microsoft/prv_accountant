@@ -96,5 +96,5 @@ class Accountant:
                                            approximation of true epsilon,
                                            upper bound of true epsilon
         """
-        f_n = self.composer.compute_composition(num_compositions=num_compositions)
+        f_n = self.compute_composition(num_compositions=num_compositions)
         return f_n.compute_epsilon(self.delta, self.delta_error, self.eps_error)
