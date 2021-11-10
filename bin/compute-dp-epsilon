@@ -40,6 +40,10 @@ def arg_parser() -> argparse.ArgumentParser:
         "-v", "--verbose", action="store_true", default=None,
         help="Increase verbosity"
     )
+    parser.add_argument(
+        "--no-fail", action="store_true", default=None,
+        help="Require all accountants to return a value"
+    )
     return parser
 
 
@@ -83,6 +87,8 @@ def main() -> int:
             eps_lower, eps_est, eps_upper = compute_eps(args.num_compositions)
             print(f"{name}:\t\teps_lower = {eps_lower:6.3} eps_estimate = {eps_est:6.3}, eps_upper = {eps_upper:6.3} ")
         except Exception as e:
+            if args.no_fail:
+                raise e
             print(f"{name}:\t\tn/a")
     return 0
 
