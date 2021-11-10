@@ -30,3 +30,25 @@ class TestAccountant:
         delta_exact = compute_delta_exact(4, 10000, 100.0)
         assert delta_upper == pytest.approx(delta_exact, rel=1e-3)
         assert delta_lower == pytest.approx(delta_exact, rel=1e-3)
+
+    def test_invariance_max_compositions(self):
+        noise_multiplier = 0.9
+        sampling_probability = 256/100000
+        target_delta = 1e-5
+
+        eps_hi_target = Accountant(
+            noise_multiplier=noise_multiplier,
+            sampling_probability=sampling_probability,
+            delta=target_delta,
+            max_compositions=4900,
+            eps_error=0.1
+        ).compute_epsilon(4900)[2]
+        for m_c in range(4900, 5000):
+            eps_hi = Accountant(
+                noise_multiplier=noise_multiplier,
+                sampling_probability=sampling_probability,
+                delta=target_delta,
+                max_compositions=m_c,
+                eps_error=0.1
+            ).compute_epsilon(4900)[2]
+            assert eps_hi == pytest.approx(eps_hi_target, 1e-3)
