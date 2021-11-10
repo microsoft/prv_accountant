@@ -2,12 +2,13 @@
 # Licensed under the MIT License.
 
 import numpy as np
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, Union, Sequence
 from prv_accountant.privacy_random_variables import PrivacyRandomVariable
 
 
 class RDP:
-    def __init__(self, prv: PrivacyRandomVariable, delta: float, orders: Iterable[float] = None) -> None:
+    def __init__(self, prvs: Union[Sequence[Tuple[PrivacyRandomVariable, int]], Sequence[PrivacyRandomVariable]],
+                 orders: Iterable[float] = None) -> None:
         """
         Create a Renyi Differential Privacy accountant
 
@@ -15,22 +16,24 @@ class RDP:
         :param float delta:
         :param Iterable[float] orders:
         """
-        self.delta = delta
+        if isinstance(prvs[0], PrivacyRandomVariable):
+            prvs = [(prv, 1) for prv in prvs]
 
         if not orders:
             orders = [1.0 + x / 10.0 for x in range(1, 100)] + list(range(12, 64))
         self.orders = np.array(orders)
 
-        self.rdp = np.array([prv.rdp(a) for a in self.orders])
+        self.rdps = [ np.array([prv.rdp(a) for a in self.orders]) for prv, _ in prvs ]
+        self.num_compositions = [ n for _, n in prvs ]
 
-    def compute_epsilon(self, num_compositions: int) -> Tuple[float, float, float]:
+    def compute_epsilon(self) -> Tuple[float, float, float]:
         """
         Compute bounds on epsilon.
 
         This function is based on Google's TF Privacy:
         https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py 
         """
-        rdp_steps = self.rdp*num_compositions
+        rdp_steps = sum( rdp*n for rdp, n in zip(self.rdps, self.num_compositions) )
         orders_vec = np.atleast_1d(self.orders)
         rdp_vec = np.atleast_1d(rdp_steps)
 

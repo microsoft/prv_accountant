@@ -9,6 +9,7 @@ from numpy import exp, sqrt
 from numpy import power as pow
 from scipy import special
 from scipy.special import erfc
+from typing import Any
 
 M_SQRT2 = sqrt(np.longdouble(2))
 M_PI = np.pi
@@ -43,7 +44,11 @@ class PrivacyRandomVariable(ABC):
         """Compute RDP of this mechanism of order alpha."""
         raise NotImplementedError(f"{type(self)} has not provided an implementation for rdp.")
 
-        
+    @abstractmethod
+    def __hash__(self) -> int:
+        pass
+
+
 class PrivacyRandomVariableTruncated:
     def __init__(self, prv, t_min: float, t_max: float) -> None:
         self.prv = prv
