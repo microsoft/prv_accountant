@@ -27,6 +27,16 @@ class TestDomain:
         assert len(d) == 4
         assert d.t_min() == pytest.approx(-1.0)
 
+    def test_create_aligned_fp_edge_cases(self):
+        """
+        Test for floating point edge cases where converting to an integer without rounding
+        leads to the wrong results.
+        """
+        dt = 0.00044859612678874264
+        L = 5.728841887379295
+        d = Domain.create_aligned(-L, L, dt)
+        assert d.dt() == pytest.approx(dt)
+
     def test_ts(self):
         d = Domain(-0.6, 0.5, 6)
 
