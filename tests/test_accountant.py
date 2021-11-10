@@ -31,7 +31,6 @@ class TestAccountant:
         assert delta_upper == pytest.approx(delta_exact, rel=1e-3)
         assert delta_lower == pytest.approx(delta_exact, rel=1e-3)
 
-<<<<<<< HEAD
     def test_throw_error_small_delta(self):
         with pytest.raises(ValueError):
             accountant = Accountant(
@@ -43,7 +42,6 @@ class TestAccountant:
             )
             accountant.compute_epsilon(1000)
 
-=======
     def test_invariance_max_compositions(self):
         noise_multiplier = 0.9
         sampling_probability = 256/100000
@@ -65,4 +63,3 @@ class TestAccountant:
                 eps_error=0.1
             ).compute_epsilon(4900)[2]
             assert eps_hi == pytest.approx(eps_hi_target, 1e-3)
->>>>>>> main
