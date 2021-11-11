@@ -24,7 +24,7 @@ class Fourier(Composer):
         :param DiscretePrivacyRandomVariable prv: PRV to compose
         """
         if len(prvs) != 1:
-            raise ValueError()
+            raise ValueError("Fourier composer can only handle homogeneous composition")
 
         prv = prvs[0]
 
@@ -36,7 +36,8 @@ class Fourier(Composer):
 
     def compute_composition(self, num_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
         if len(num_compositions) != 1:
-            raise ValueError()
+            raise ValueError("Length of `num_compositions` needs to match length of PRVs.")
+        num_compositions = num_compositions[0]
 
         f_n = irfft(self.F**num_compositions)
 

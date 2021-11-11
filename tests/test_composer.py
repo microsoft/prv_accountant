@@ -17,9 +17,9 @@ class TestFourier:
         pmf = binom.pmf(domain.ts().astype(np.double), 100, 0.4)
         prv = DiscretePrivacyRandomVariable(pmf, domain)
 
-        composer = composers.Fourier(prv)
+        composer = composers.Fourier([prv])
 
-        f_n = composer.compute_composition(1)
+        f_n = composer.compute_composition([1])
 
         assert_array_almost_equal(f_n.pmf, prv.pmf)
 
@@ -34,8 +34,8 @@ class TestFourier:
 
         assert pmf.sum() == pytest.approx(1)
 
-        composer = composers.Fourier(prv)
+        composer = composers.Fourier([prv])
 
-        f_n = composer.compute_composition(3)
+        f_n = composer.compute_composition([3])
 
         assert np.dot(f_n.pmf, domain.ts()) == pytest.approx(3, abs=1e-3)
