@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 from scipy import stats
 
-from prv_accountant import DPSGDAccountant, privacy_random_variables, PRVAccountantHeterogenous
+from prv_accountant import DPSGDAccountant, privacy_random_variables, PRVAccountant
 
 
 def compute_delta_exact(eps, iters, sigma):
@@ -31,7 +31,7 @@ class TestDPSGDAccountant:
         assert delta_upper == pytest.approx(delta_exact, rel=1e-3)
         assert delta_lower == pytest.approx(delta_exact, rel=1e-3)
 
-def test_throw_exceeding_max_compositions(self):
+    def test_throw_exceeding_max_compositions(self):
         with pytest.raises(ValueError):
             accountant = DPSGDAccountant(
                 noise_multiplier=100.0,

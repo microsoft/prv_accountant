@@ -44,10 +44,6 @@ class PrivacyRandomVariable(ABC):
         """Compute RDP of this mechanism of order alpha."""
         raise NotImplementedError(f"{type(self)} has not provided an implementation for rdp.")
 
-    @abstractmethod
-    def __hash__(self) -> int:
-        pass
-
 
 class PrivacyRandomVariableTruncated:
     def __init__(self, prv, t_min: float, t_max: float) -> None:

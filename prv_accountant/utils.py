@@ -1,11 +1,11 @@
-from dataclasses import dataclass
-from typing import Iterable, List, Dict, Callable
+from typing import Iterable, Callable, Tuple
+from collections import OrderedDict
 
-from .privacy_random_variables import PrivacyRandomVariable
+from .privacy_random_variables import PrivacyRandomVariable, PrivacyRandomVariableTruncated
 
-@dataclass
 class PRVSequence:
-    prvs: Dict[PrivacyRandomVariable, int]
+    def __init__(self, prvs: OrderedDict) -> None:
+        self.prvs: OrderedDict[PrivacyRandomVariable, int] = OrderedDict(prvs)
 
     def total_num_compositions(self) -> int:
         return sum(self.prvs.values())
@@ -15,6 +15,9 @@ class PRVSequence:
 
     def __iter__(self) -> Iterable[PrivacyRandomVariable]:
         return iter(self.prvs.keys())
+
+    def items(self) -> Tuple[PrivacyRandomVariable, int]:
+        return self.prvs.items()
 
     def map(self, fn: Callable[[PrivacyRandomVariable], PrivacyRandomVariable]) -> "PRVSequence":
         return PRVSequence({ fn(prv): n for prv, n in self.prvs.items() })

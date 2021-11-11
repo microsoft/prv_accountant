@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-from typing import AsyncContextManager
 import scipy
 import math
 import pytest

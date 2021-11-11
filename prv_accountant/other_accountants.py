@@ -7,8 +7,7 @@ from prv_accountant.privacy_random_variables import PrivacyRandomVariable
 
 
 class RDP:
-    def __init__(self, prvs: Union[Sequence[Tuple[PrivacyRandomVariable, int]], Sequence[PrivacyRandomVariable]],
-                 orders: Iterable[float] = None) -> None:
+    def __init__(self, prvs: Sequence[PrivacyRandomVariable], orders: Iterable[float] = None) -> None:
         """
         Create a Renyi Differential Privacy accountant
 
@@ -26,21 +25,24 @@ class RDP:
         self.rdps = [ np.array([prv.rdp(a) for a in self.orders]) for prv, _ in prvs ]
         self.num_compositions = [ n for _, n in prvs ]
 
-    def compute_epsilon(self) -> Tuple[float, float, float]:
+    def compute_epsilon(self, delta: float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
         Compute bounds on epsilon.
 
         This function is based on Google's TF Privacy:
         https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py 
         """
-        rdp_steps = sum( rdp*n for rdp, n in zip(self.rdps, self.num_compositions) )
+        if len(num_compositions) != len(self.rdps):
+            raise ValueError()
+
+        rdp_steps = sum( rdp*n for rdp, n in zip(self.rdps, num_compositions) )
         orders_vec = np.atleast_1d(self.orders)
         rdp_vec = np.atleast_1d(rdp_steps)
 
         if len(orders_vec) != len(rdp_vec):
             raise ValueError("Input lists must have the same length.")
 
-        eps = rdp_vec - np.log(self.delta * orders_vec) / (orders_vec - 1) + np.log1p(- 1 / orders_vec)
+        eps = rdp_vec - np.log(delta * orders_vec) / (orders_vec - 1) + np.log1p(- 1 / orders_vec)
 
         idx_opt = np.nanargmin(eps)  # Ignore NaNs
         eps_opt = eps[idx_opt]

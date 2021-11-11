@@ -3,9 +3,7 @@
 
 import numpy as np
 import warnings
-from typing import Tuple, Sequence, Optional, Union
-
-from abc import ABC, abstractmethod
+from typing import Tuple, Sequence, Optional
 
 from .other_accountants import RDP
 from . import discretisers
@@ -13,79 +11,29 @@ from . import composers
 from .domain import Domain
 from .discrete_privacy_random_variable import DiscretePrivacyRandomVariable
 from .privacy_random_variables import PrivacyRandomVariableTruncated, PrivacyRandomVariable
-from utils import PRVSequence
 from . import privacy_random_variables
 
 
-def compute_safe_domain_size(prvs: PRVSequence, eps_error: float, delta_error: float) -> float:
-    max_compositions = prvs.total_num_compositions()
+def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_compositions: Sequence[int],
+                             eps_error: float, delta_error: float) -> float:
+    """
+    Compute a safe domain size for PRVS
+    """
+    total_compositions = sum(max_compositions)
 
     rdp = RDP(prvs=prvs)
-    L = rdp.compute_epsilon(delta=delta_error/4)[2]
+    L = rdp.compute_epsilon(delta=delta_error/4, num_compositions=max_compositions)[2]
 
     for prv in prvs:
-        rdp = RDP(prvs=PRVSequence({prv: 1}))
-        L = max(L, rdp.compute_epsilon(delta=delta_error/8/max_compositions)[2])
+        rdp = RDP(prvs=[prv])
+        L = max(L, rdp.compute_epsilon(delta=delta_error/8/total_compositions, num_compositions=[1])[2])
     L = max(L, eps_error) + 3
     return L
 
 
-class AbstractAccountant(ABC):
-    @abstractmethod
-    def compute_epsilon(self, delta: float, num_compositions: Optional[int] = None)  -> Tuple[float, float, float]:
-        pass
-
-
-class PRVAccountantHomogeneous:
-    def __init__(self, prv: PrivacyRandomVariable, eps_error: float, delta_error:float, max_compositions: int,
-                 eps_max: Optional[float] = None):
-        """
-        Privacy Random Variable Accountant for heterogenous composition
-
-        :param PrivacyRandomVariable prv: `PrivacyRandomVariable` to be composed.
-        :param eps_error: Maximum error allowed in $\varepsilon$. Typically around 0.1
-        :param delta_error: Maximum error allowed in $\delta$. typically around $10^{-3} \times \delta$
-        :param int max_compositions: Maximum number of compositions to be computed. If the actual number of compositions exceeds
-                                     this value then the error computations may be off.
-        :param Optional[float] eps_max: Maximum number of valid epsilon. If the true epsilon exceeds this value the
-                                        privacy calculation may be off. Setting `eps_max` to `None` automatically computes
-                                        a suitable `eps_max` if the PRV supports it.
-        """
-        self.eps_error = eps_error
-        self.delta_error = delta_error
-
-        eta0 = self.delta_error/3
-        mesh_size = 2*eps_error / np.sqrt(2*max_compositions*np.log(2/eta0))
-
-        if eps_max:
-            L = eps_max
-            warnings.warn(f"Assuming that true epsilon < {eps_max}. If this is not a valid assumption set `eps_max=None`.")
-        else:
-            L = compute_safe_domain_size([prv], self.eps_error, self.delta_error, max_compositions)
-
-        domain = Domain.create_aligned(-L, L, mesh_size)
-        prv_trunc = PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max())
-        dprv = discretisers.CellCentred().discretise(prv_trunc, domain)
-        self.composer = composers.Fourier(dprv)
-
-    def compute_composition(self, num_compositions: int) -> DiscretePrivacyRandomVariable:
-        if num_compositions > self.max_compositions:
-            raise ValueError("Requested number of compositions exceeds the maximum number of compositions")
-        return self.composer.compute_composition(num_compositions)
-
-    def compute_epsilon(self, delta:float, num_compositions: int) -> Tuple[float, float, float]:
-        return self.compute_composition(num_compositions).compute_epsilon(delta, self.delta_error, self.eps_error)
-
-    def compute_delta_upper(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
-        return f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error
-
-    def compute_delta_lower(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
-        return f_n.compute_delta_estimate(epsilon+self.eps_error)-self.delta_error
-
-
-class PRVAccountantHeterogenous(AbstractAccountant):
-    def __init__(self, prvs: Union[Sequence[Tuple[PrivacyRandomVariable, int]], Sequence[PrivacyRandomVariable]],
-                 eps_error: float, delta_error: float, eps_max: Optional[float] = None) -> None:
+class PRVAccountant:
+    def __init__(self, prvs: Sequence[PrivacyRandomVariable], eps_error: float, delta_error:float,
+                 max_compositions: Sequence[int], eps_max: Optional[float] = None):
         """
         Privacy Random Variable Accountant for heterogenous composition
 
@@ -98,15 +46,14 @@ class PRVAccountantHeterogenous(AbstractAccountant):
                                         privacy calculation may be off. Setting `eps_max` to `None` automatically computes
                                         a suitable `eps_max` if the PRV supports it.
         """
-        if isinstance(prvs[0], PrivacyRandomVariable):
-            prvs = [(prv, 1) for prv in prvs]
-
+        self.eps_error = eps_error
         self.eps_error = eps_error
         self.delta_error = delta_error
+        self.prvs = prvs
+        self.max_compositions = max_compositions
 
-        self.prvs = [prv for prv, _ in prvs]
-        self.n_comp = [n for _, n in prvs]
-        max_compositions = sum(self.n_comp)
+        if len(max_compositions) != len(prvs):
+            raise ValueError()
 
         if eps_max:
             L = eps_max
@@ -114,44 +61,44 @@ class PRVAccountantHeterogenous(AbstractAccountant):
         else:
             L = compute_safe_domain_size(self.prvs, self.eps_error, self.delta_error, max_compositions)
 
+        total_max_compositions = sum(max_compositions)
+
         eta0 = self.delta_error/3
-        mesh_size = 2*eps_error / np.sqrt(2*max_compositions*np.log(2/eta0))
+        mesh_size = 2*eps_error / np.sqrt(2*total_max_compositions*np.log(2/eta0))
         domain = Domain.create_aligned(-L, L, mesh_size)
 
-        prv_trunc = prvs.map(lambda prv: PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max()))
-        self.dprvs = prvs.map(lambda prv_t: discretisers.CellCentred().discretise(prv_t, domain))
+        tprvs = [PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max()) for prv in prvs]
+        dprvs = [discretisers.Discretiser().discretise(tprv, domain) for tprv in tprvs]
+        self.homogeneous_composers = [composers.Fourier(dprv) for dprv in dprvs]
 
-        prvs_trunc = [ PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max()) for prv in self.prvs ]
-        self.dprvs = [ discretisers.CellCentred().discretise(prv, domain) for prv in prvs_trunc ]
+    def compute_composition(self, num_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
+        if len(self.homogeneous_composers) != len(num_compositions):
+            raise ValueError()
 
-    def add(self, prv:PrivacyRandomVariable, num_compositions: int) -> None:
-        prv_trunc = 
-        self.dprvs.append(dprv)
+        if (np.array(self.max_compositions) < np.array(num_compositions)).any():
+            raise ValueError()
 
-    def compute_epsilon(self, delta:float, num_compositions: Optional[int] = None) -> Tuple[float, float, float]:
+        f_n_s = [composer.compute_composition(n) for composer, n in zip(self.homogeneous_composers, num_compositions)]
+        f_n = composers.Heterogenous(f_n_s).compute_composition([1]*len(f_n_s))
+        return f_n
+
+    def compute_delta(self, epsilon: float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
+        f_n = self.compute_composition(num_compositions)
+        delta_lower = f_n.compute_delta_estimate(epsilon+self.eps_error)-self.delta_error
+        delta_estim = f_n.compute_delta_estimate(epsilon)
+        delta_upper = f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error
+        return (delta_lower, delta_estim, delta_upper)
+
+    def compute_epsilon(self, delta:float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
         Compute bounds for epsilon
 
         :param float delta: Target delta
-        :param Optional[int] num_compositions: This value cannot be used with heterogenous composition
         :return: Return lower bound on $\varepsilon$, estimate for $\varepsilon$ and upper bound on $\varepsilon$
         :rtype: Tuple[float,float,float]
         """
-        assert num_compositions is None
-        f_n = self.compute_composition()
+        f_n = self.compute_composition(num_compositions)
         return f_n.compute_epsilon(delta, self.delta_error, self.eps_error)
-
-    def compute_composition(self) -> DiscretePrivacyRandomVariable:
-        f_n_s = [composers.Fourier(dprv).compute_composition(n) for dprv, n in zip(self.dprvs, self.n_comp)]
-        f_n = composers.Heterogenous(f_n_s).compute_composition()
-        self.dprvs = [f_n]
-        return f_n
-
-    def compute_delta_upper(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
-        return f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error
-
-    def compute_delta_lower(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
-        return f_n.compute_delta_estimate(epsilon+self.eps_error)-self.delta_error
 
 
 class DPSGDAccountant:
@@ -179,20 +126,12 @@ class DPSGDAccountant:
             sampling_probability=sampling_probability, noise_multiplier=noise_multiplier
         )
         self.delta = delta
-        self.accountant = PRVAccountantHomogeneous(prv=prv, eps_error=eps_error, delta_error=self.delta/1000,
-                                                   max_compositions=max_compositions)
-
-    def compute_composition(self, num_compositions: int) -> DiscretePrivacyRandomVariable:
-        return self.accountant.compute_composition(num_compositions)
+        self.accountant = PRVAccountant(prvs=[prv], eps_error=eps_error, delta_error=self.delta/1000,
+                                        max_compositions=[max_compositions])
 
     def compute_epsilon(self, num_compositions: int) -> Tuple[float, float, float]:
-        return self.compute_epsilon(self.delta, num_compositions)
+        return self.accountant.compute_epsilon(self.delta, [num_compositions])
 
-    def compute_delta_upper(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
-        return self.accountant.compute_delta_upper(f_n, epsilon)
-
-    def compute_delta_lower(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
-        return self.accountant.compute_delta_lower(f_n, epsilon)
 
 
 class Accountant(DPSGDAccountant):

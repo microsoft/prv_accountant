@@ -17,11 +17,19 @@ class TestFourier:
         pmf = binom.pmf(domain.ts().astype(np.double), 100, 0.4)
         prv = DiscretePrivacyRandomVariable(pmf, domain)
 
-        composer = composers.Fourier(prv)
+        composer = composers.Fourier([prv])
 
-        f_n = composer.compute_composition(1)
+        f_n = composer.compute_composition([1])
 
         assert_array_almost_equal(f_n.pmf, prv.pmf)
+
+    def test_raise_non_homogeneous(self):
+        domain = Domain(0, 100, 100)
+        pmf = binom.pmf(domain.ts().astype(np.double), 100, 0.4)
+        prv = DiscretePrivacyRandomVariable(pmf, domain)
+
+        with pytest.raises(ValueError):
+            composer = composers.Fourier([prv, prv])
 
     def test_gaussian_analytical(self):
         """
@@ -34,9 +42,9 @@ class TestFourier:
 
         assert pmf.sum() == pytest.approx(1)
 
-        composer = composers.Fourier(prv)
+        composer = composers.Fourier([prv])
 
-        f_n = composer.compute_composition(3)
+        f_n = composer.compute_composition([3])
 
         assert np.dot(f_n.pmf, domain.ts()) == pytest.approx(3, abs=1e-3)
 
@@ -47,10 +55,10 @@ class TestComposers:
         pmf = binom.pmf(domain.ts().astype(np.double), 100, 0.4)
         prv = DiscretePrivacyRandomVariable(pmf, domain)
 
-        composer_f = composers.Fourier(prv)
-        composer_h = composers.Heterogenous([prv]*num_compositions)
+        composer_f = composers.Fourier([prv])
+        composer_h = composers.ConvolutionTree([prv]*num_compositions)
 
-        f_n_f = composer_f.compute_composition(num_compositions)
-        f_n_h = composer_h.compute_composition()
+        f_n_f = composer_f.compute_composition([num_compositions])
+        f_n_h = composer_h.compute_composition([1])
 
         assert_array_almost_equal(f_n_f.pmf, f_n_h.pmf)
