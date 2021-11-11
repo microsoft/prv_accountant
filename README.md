@@ -12,6 +12,8 @@ pip install prv-accountant
 
 ## Examples
 
+### DP-SGD
+
 Getting epsilon estimate directly from the command line.
 
 ```
@@ -35,6 +37,9 @@ eps_low, eps_estimate, eps_upper = accountant.compute_epsilon(num_compositions=1
 ```
 
 For more examples, have a look in the `notebooks` directory.
+
+
+### Heterogeneous Composition
 
 
 ## References

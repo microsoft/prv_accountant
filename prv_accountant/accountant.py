@@ -32,8 +32,8 @@ def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_composit
 
 
 class PRVAccountant:
-    def __init__(self, prvs: Sequence[PrivacyRandomVariable], eps_error: float, delta_error:float,
-                 max_compositions: Sequence[int], eps_max: Optional[float] = None):
+    def __init__(self, prvs: Sequence[PrivacyRandomVariable], max_compositions: Sequence[int], 
+                 eps_error: float, delta_error:float, eps_max: Optional[float] = None):
         """
         Privacy Random Variable Accountant for heterogenous composition
 
@@ -59,7 +59,7 @@ class PRVAccountant:
             L = eps_max
             warnings.warn(f"Assuming that true epsilon < {eps_max}. If this is not a valid assumption set `eps_max=None`.")
         else:
-            L = compute_safe_domain_size(self.prvs, self.eps_error, self.delta_error, max_compositions)
+            L = compute_safe_domain_size(self.prvs, max_compositions, eps_error=self.eps_error, delta_error=self.delta_error)
 
         total_max_compositions = sum(max_compositions)
 
@@ -68,33 +68,49 @@ class PRVAccountant:
         domain = Domain.create_aligned(-L, L, mesh_size)
 
         tprvs = [PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max()) for prv in prvs]
-        dprvs = [discretisers.Discretiser().discretise(tprv, domain) for tprv in tprvs]
-        self.homogeneous_composers = [composers.Fourier(dprv) for dprv in dprvs]
+        dprvs = [discretisers.CellCentred().discretise(tprv, domain) for tprv in tprvs]
+        self.homogeneous_composers = [composers.Fourier([dprv]) for dprv in dprvs]
 
     def compute_composition(self, num_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
+        """
+        Compute the composition of the PRVs
+
+        :param Sequence[int] num_compositions: Number of compositions for each PRV
+        :return Composed PRV
+        :rtype: DiscretePrivacyRandomVariable
+        """
         if len(self.homogeneous_composers) != len(num_compositions):
-            raise ValueError()
+            raise ValueError("Length of `num_compositions` needs to match length of PRVs.")
 
         if (np.array(self.max_compositions) < np.array(num_compositions)).any():
-            raise ValueError()
+            raise ValueError("Requested number of compositions exceeds the maximum number of compositions")
 
-        f_n_s = [composer.compute_composition(n) for composer, n in zip(self.homogeneous_composers, num_compositions)]
-        f_n = composers.Heterogenous(f_n_s).compute_composition([1]*len(f_n_s))
+        f_n_s = [composer.compute_composition([n]) for composer, n in zip(self.homogeneous_composers, num_compositions)]
+        f_n = composers.ConvolutionTree(f_n_s).compute_composition([1]*len(f_n_s))
         return f_n
 
     def compute_delta(self, epsilon: float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
+        """
+        Compute bounds for delta for a given epsilon
+
+        :param float epsilon: Target epsilon
+        :param Sequence[int] num_compositions: Number of compositions for each PRV
+        :return: Return lower bound for $\delta$, estimate for $\delta$ and upper bound for $\delta$
+        :rtype: Tuple[float,float,float]
+        """
         f_n = self.compute_composition(num_compositions)
-        delta_lower = f_n.compute_delta_estimate(epsilon+self.eps_error)-self.delta_error
-        delta_estim = f_n.compute_delta_estimate(epsilon)
-        delta_upper = f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error
+        delta_lower = float(f_n.compute_delta_estimate(epsilon+self.eps_error)-self.delta_error)
+        delta_estim = float(f_n.compute_delta_estimate(epsilon))
+        delta_upper = float(f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error)
         return (delta_lower, delta_estim, delta_upper)
 
     def compute_epsilon(self, delta:float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
-        Compute bounds for epsilon
+        Compute bounds for epsilon for a given delta
 
         :param float delta: Target delta
-        :return: Return lower bound on $\varepsilon$, estimate for $\varepsilon$ and upper bound on $\varepsilon$
+        :param Sequence[int] num_compositions: Number of compositions for each PRV
+        :return: Return lower bound for $\varepsilon$, estimate for $\varepsilon$ and upper bound for $\varepsilon$
         :rtype: Tuple[float,float,float]
         """
         f_n = self.compute_composition(num_compositions)
@@ -130,8 +146,14 @@ class DPSGDAccountant:
                                         max_compositions=[max_compositions])
 
     def compute_epsilon(self, num_compositions: int) -> Tuple[float, float, float]:
-        return self.accountant.compute_epsilon(self.delta, [num_compositions])
+        """
+        Compute bounds for epsilon
 
+        :param int num_compositions: Number of DP-SGD steps.
+        :return: Return lower bound for $\varepsilon$, estimate for $\varepsilon$ and upper bound for $\varepsilon$
+        :rtype: Tuple[float,float,float]
+        """
+        return self.accountant.compute_epsilon(self.delta, [num_compositions])
 
 
 class Accountant(DPSGDAccountant):
@@ -142,4 +164,3 @@ class Accountant(DPSGDAccountant):
         assert mesh_size is None
         super().__init__(noise_multiplier=noise_multiplier, sampling_probability=sampling_probability,
                          delta=delta, max_compositions=max_compositions, eps_error=eps_error)
-      

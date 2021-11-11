@@ -59,6 +59,6 @@ class TestComposers:
         composer_h = composers.ConvolutionTree([prv]*num_compositions)
 
         f_n_f = composer_f.compute_composition([num_compositions])
-        f_n_h = composer_h.compute_composition([1])
+        f_n_h = composer_h.compute_composition([1]*num_compositions)
 
         assert_array_almost_equal(f_n_f.pmf, f_n_h.pmf)
