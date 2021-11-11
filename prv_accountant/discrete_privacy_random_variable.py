@@ -19,6 +19,10 @@ class DiscretePrivacyRandomVariable:
         return len(self.pmf)
 
     def compute_epsilon(self, delta: float, delta_error: float, epsilon_error: float) -> Tuple[float, float, float]:
+        if np.finfo(np.longdouble).eps*len(self.domain) > delta - delta_error:
+            raise ValueError("Floating point errors will dominate for such small values of delta. "
+                             "Increase delta or reduce domain size.")
+
         t = self.domain.ts()
         p = self.pmf
         d1 = np.flip(np.flip(p).cumsum())

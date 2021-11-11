@@ -40,7 +40,7 @@ class RDP:
         if len(orders_vec) != len(rdp_vec):
             raise ValueError("Input lists must have the same length.")
 
-        eps = rdp_vec - np.log(self.delta) / (orders_vec - 1)
+        eps = rdp_vec - np.log(self.delta * orders_vec) / (orders_vec - 1) + np.log1p(- 1 / orders_vec)
 
         idx_opt = np.nanargmin(eps)  # Ignore NaNs
         eps_opt = eps[idx_opt]

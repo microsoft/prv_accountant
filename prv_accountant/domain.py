@@ -46,11 +46,13 @@ class Domain:
         """
         t_min = np.floor(t_min/dt)*dt
         t_max = np.ceil(t_max/dt)*dt
-        size = int((t_max-t_min)/dt) + 1
+        size = int(np.round((t_max-t_min)/dt)) + 1
         if size % 2 == 1:
             size += 1
             t_max += dt
-        return Domain(t_min, t_max, size)
+        d = Domain(t_min, t_max, size)
+        assert np.abs(d.dt() - dt)/dt < 1e-8
+        return d
 
     def shifts(self) -> float:
         """Sum of all shifts that were applied to this domain"""
