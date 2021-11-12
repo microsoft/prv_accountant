@@ -69,7 +69,7 @@ class PRVAccountant:
 
         tprvs = [PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max()) for prv in prvs]
         dprvs = [discretisers.CellCentred().discretise(tprv, domain) for tprv in tprvs]
-        self.homogeneous_composers = [composers.Fourier([dprv]) for dprv in dprvs]
+        self.composer = composers.Heterogeneous(dprvs)
 
     def compute_composition(self, num_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
         """
@@ -79,15 +79,10 @@ class PRVAccountant:
         :return Composed PRV
         :rtype: DiscretePrivacyRandomVariable
         """
-        if len(self.homogeneous_composers) != len(num_compositions):
-            raise ValueError("Length of `num_compositions` needs to match length of PRVs.")
-
         if (np.array(self.max_compositions) < np.array(num_compositions)).any():
             raise ValueError("Requested number of compositions exceeds the maximum number of compositions")
 
-        f_n_s = [composer.compute_composition([n]) for composer, n in zip(self.homogeneous_composers, num_compositions)]
-        f_n = composers.ConvolutionTree(f_n_s).compute_composition([1]*len(f_n_s))
-        return f_n
+        return self.composer.compute_composition(num_compositions=num_compositions)
 
     def compute_delta(self, epsilon: float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """

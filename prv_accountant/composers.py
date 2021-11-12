@@ -12,8 +12,20 @@ from .discrete_privacy_random_variable import DiscretePrivacyRandomVariable
 
 
 class Composer(ABC):
+    def __init__(self, prvs: Sequence[DiscretePrivacyRandomVariable]) -> None:
+        """
+        Abstract base class for a composing mechanism.
+        :param Sequence[DiscretePrivacyRandomVariable] prvs: Sequence of discrete PRVs to compose
+        """
+        self.prvs = prvs
+
     @abstractmethod
     def compute_composition(self, num_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
+        """
+        Abstract method to compute the composition of PRVs
+        :param Sequence[int] num_composition: The number of composition for each PRV with itself.
+                                              The length of this sequence needs to match `self.prvs`.
+        """
         pass
 
 
@@ -24,6 +36,8 @@ class Fourier(Composer):
 
         :param Sequence[DiscretePrivacyRandomVariable] prvs: PRVs to compose. The sequence must be of length 1.
         """
+        super().__init__(prvs=prvs)
+
         if len(prvs) != 1:
             raise ValueError("Fourier composer can only handle homogeneous composition")
         prv = prvs[0]
@@ -53,7 +67,7 @@ class Fourier(Composer):
 
 class ConvolutionTree(Composer):
     def __init__(self, prvs: Sequence[DiscretePrivacyRandomVariable]) -> None:
-        self.prvs = prvs
+        super().__init__(prvs=prvs)
 
     def compute_composition(self, num_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
         if len(self.prvs) != len(num_compositions):
@@ -77,3 +91,14 @@ class ConvolutionTree(Composer):
         domain = prv_L.domain.shift_right(prv_R.domain.shifts())
         return DiscretePrivacyRandomVariable(f, domain)
 
+
+class Heterogeneous(Composer):
+    def __init__(self, prvs: Sequence[DiscretePrivacyRandomVariable]) -> None:
+        super().__init__(prvs)
+        self.homogeneous_composers = [Fourier([prv]) for prv in prvs]
+
+    def compute_composition(self, num_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
+        if len(num_compositions) != len(self.homogeneous_composers):
+            raise ValueError("Number of self compositions needs to match the number of PRVs.")
+        self_composed = [h_c.compute_composition([n]) for h_c, n in zip(self.homogeneous_composers, num_compositions)]
+        return ConvolutionTree(self_composed).compute_composition([1]*len(self_composed))
