@@ -3,7 +3,7 @@
 
 import numpy as np
 import warnings
-from typing import Tuple, Sequence, Optional
+from typing import Tuple, Sequence, Optional, Union
 
 from .other_accountants import RDP
 from . import discretisers
@@ -32,8 +32,10 @@ def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_composit
 
 
 class PRVAccountant:
-    def __init__(self, prvs: Sequence[PrivacyRandomVariable], max_self_compositions: Sequence[int], 
-                 eps_error: float, delta_error:float, eps_max: Optional[float] = None):
+    def __init__(self, prvs: Union[PrivacyRandomVariable, Sequence[PrivacyRandomVariable]],  
+                 eps_error: float, delta_error:float, 
+                 max_self_compositions: Sequence[int] = None,
+                 eps_max: Optional[float] = None):
         """
         Privacy Random Variable Accountant for heterogenous composition
 
@@ -47,6 +49,14 @@ class PRVAccountant:
                                         privacy calculation may be off. Setting `eps_max` to `None` automatically computes
                                         a suitable `eps_max` if the PRV supports it.
         """
+        if isinstance(prvs, PrivacyRandomVariable):
+            prvs = [prvs]
+            if max_self_compositions is not None:
+                max_self_compositions = [max_self_compositions]
+
+        if max_self_compositions is None:
+            max_self_compositions = [1]*len(prvs)
+
         self.eps_error = eps_error
         self.eps_error = eps_error
         self.delta_error = delta_error
@@ -72,7 +82,7 @@ class PRVAccountant:
         dprvs = [discretisers.CellCentred().discretise(tprv, domain) for tprv in tprvs]
         self.composer = composers.Heterogeneous(dprvs)
 
-    def compute_composition(self, num_self_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
+    def compute_composition(self, num_self_compositions: Union[Optional[int], Sequence[int]]) -> DiscretePrivacyRandomVariable:
         """
         Compute the composition of the PRVs
 
@@ -80,6 +90,12 @@ class PRVAccountant:
         :return Composed PRV
         :rtype: DiscretePrivacyRandomVariable
         """
+        if num_self_compositions is None:
+            num_self_compositions = [1]*len(self.prvs)
+
+        if isinstance(num_self_compositions, int):
+            num_self_compositions = [num_self_compositions]
+
         if (np.array(self.max_self_compositions) < np.array(num_self_compositions)).any():
             raise ValueError("Requested number of compositions exceeds the maximum number of compositions")
 
