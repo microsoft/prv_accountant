@@ -15,9 +15,6 @@ from .privacy_random_variables import PrivacyRandomVariableTruncated
 from . import privacy_random_variables
 
 
-class PRVAccountant(self)
-
-
 class Accountant:
     def __init__(self, noise_multiplier: float, sampling_probability: float,
                  delta: float, max_compositions: int, eps_error: float = None,

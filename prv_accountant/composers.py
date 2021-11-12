@@ -92,7 +92,7 @@ class ConvolutionTree(Composer):
 
         :type num_self_compositions: Sequence[int] 
         """
-        if (np.array(num_self_compositions)-1).abs().any():
+        if (np.array(num_self_compositions)-1).any():
             raise ValueError("Cannot handle homogeneous composition. Use Fourier composer for that.")
         prvs = self.prvs
         while len(prvs) > 1:
@@ -134,5 +134,5 @@ class Heterogeneous(Composer):
         """
         if len(num_self_compositions) != len(self.prvs):
             raise ValueError("")
-        self_composed_prvs = [sc.compute_composition(n) for sc, n in zip(self.self_composers, num_self_compositions)]
+        self_composed_prvs = [sc.compute_composition([n]) for sc, n in zip(self.self_composers, num_self_compositions)]
         return ConvolutionTree(self_composed_prvs).compute_composition([1]*len(num_self_compositions))
