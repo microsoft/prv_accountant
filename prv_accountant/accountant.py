@@ -85,31 +85,31 @@ class PRVAccountant:
 
         return self.composer.compute_composition(num_self_compositions=num_self_compositions)
 
-    def compute_delta(self, epsilon: float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
+    def compute_delta(self, epsilon: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
         Compute bounds for delta for a given epsilon
 
         :param float epsilon: Target epsilon
-        :param Sequence[int] num_compositions: Number of compositions for each PRV
+        :param Sequence[int] num_sefl_compositions: Number of compositions for each PRV with itself
         :return: Return lower bound for $\delta$, estimate for $\delta$ and upper bound for $\delta$
         :rtype: Tuple[float,float,float]
         """
-        f_n = self.compute_composition(num_compositions)
+        f_n = self.compute_composition(num_self_compositions)
         delta_lower = float(f_n.compute_delta_estimate(epsilon+self.eps_error)-self.delta_error)
         delta_estim = float(f_n.compute_delta_estimate(epsilon))
         delta_upper = float(f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error)
         return (delta_lower, delta_estim, delta_upper)
 
-    def compute_epsilon(self, delta:float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
+    def compute_epsilon(self, delta:float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
         Compute bounds for epsilon for a given delta
 
         :param float delta: Target delta
-        :param Sequence[int] num_compositions: Number of compositions for each PRV
+        :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself
         :return: Return lower bound for $\varepsilon$, estimate for $\varepsilon$ and upper bound for $\varepsilon$
         :rtype: Tuple[float,float,float]
         """
-        f_n = self.compute_composition(num_compositions)
+        f_n = self.compute_composition(num_self_compositions)
         return f_n.compute_epsilon(delta, self.delta_error, self.eps_error)
 
 
