@@ -32,14 +32,15 @@ def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_composit
 
 
 class PRVAccountant:
-    def __init__(self, prvs: Sequence[PrivacyRandomVariable], max_compositions: Sequence[int], 
+    def __init__(self, prvs: Sequence[PrivacyRandomVariable], max_self_compositions: Sequence[int], 
                  eps_error: float, delta_error:float, eps_max: Optional[float] = None):
         """
         Privacy Random Variable Accountant for heterogenous composition
 
-        :param prvs: Sequence of `PrivacyRandomVariable` to be composed. If passed as part of a tuple the
-                     second element of the tuple indicates how often this PRV is to be composed
-        :type prvs: `Union[Sequence[Tuple[PrivacyRandomVariable, int]], Sequence[PrivacyRandomVariable]]
+        :param prvs: Sequence of `PrivacyRandomVariable` to be composed.
+        :type prvs: `Sequence[PrivacyRandomVariable]`
+        :param max_self_compositions: Maximum number of compositions of the PRV with itself.
+        :type max_self_compositions: Sequence[int]
         :param eps_error: Maximum error allowed in $\varepsilon$. Typically around 0.1
         :param delta_error: Maximum error allowed in $\delta$. typically around $10^{-3} \times \delta$
         :param Optional[float] eps_max: Maximum number of valid epsilon. If the true epsilon exceeds this value the
@@ -50,28 +51,28 @@ class PRVAccountant:
         self.eps_error = eps_error
         self.delta_error = delta_error
         self.prvs = prvs
-        self.max_compositions = max_compositions
+        self.max_self_compositions = max_self_compositions
 
-        if len(max_compositions) != len(prvs):
+        if len(max_self_compositions) != len(prvs):
             raise ValueError()
 
         if eps_max:
             L = eps_max
             warnings.warn(f"Assuming that true epsilon < {eps_max}. If this is not a valid assumption set `eps_max=None`.")
         else:
-            L = compute_safe_domain_size(self.prvs, max_compositions, eps_error=self.eps_error, delta_error=self.delta_error)
+            L = compute_safe_domain_size(self.prvs, max_self_compositions, eps_error=self.eps_error, delta_error=self.delta_error)
 
-        total_max_compositions = sum(max_compositions)
+        total_max_self_compositions = sum(max_self_compositions)
 
         eta0 = self.delta_error/3
-        mesh_size = 2*eps_error / np.sqrt(2*total_max_compositions*np.log(2/eta0))
+        mesh_size = 2*eps_error / np.sqrt(2*total_max_self_compositions*np.log(2/eta0))
         domain = Domain.create_aligned(-L, L, mesh_size)
 
         tprvs = [PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max()) for prv in prvs]
         dprvs = [discretisers.CellCentred().discretise(tprv, domain) for tprv in tprvs]
         self.composer = composers.Heterogeneous(dprvs)
 
-    def compute_composition(self, num_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
+    def compute_composition(self, num_self_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
         """
         Compute the composition of the PRVs
 
@@ -79,10 +80,10 @@ class PRVAccountant:
         :return Composed PRV
         :rtype: DiscretePrivacyRandomVariable
         """
-        if (np.array(self.max_compositions) < np.array(num_compositions)).any():
+        if (np.array(self.max_self_compositions) < np.array(num_self_compositions)).any():
             raise ValueError("Requested number of compositions exceeds the maximum number of compositions")
 
-        return self.composer.compute_composition(num_compositions=num_compositions)
+        return self.composer.compute_composition(num_self_compositions=num_self_compositions)
 
     def compute_delta(self, epsilon: float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
