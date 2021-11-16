@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-from typing import AsyncContextManager
 import scipy
 import math
 import pytest
@@ -10,9 +9,10 @@ import sys
 
 from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log, PrivacyRandomVariableTruncated
 
+
 def test_safe_log():
-    assert np.isnan(log(-1)) == True
-    assert np.isneginf(log(0)) == True
+    assert np.isnan(log(-1)) is True
+    assert np.isneginf(log(0)) is True
     assert log(1) == pytest.approx(0)
 
 

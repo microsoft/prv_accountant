@@ -4,8 +4,6 @@
 import numpy as np
 from typing import Tuple
 
-from scipy import optimize
-
 from .other_accountants import RDP
 from . import discretisers
 from . import composers
@@ -55,7 +53,7 @@ class Accountant:
             mesh_size = 2*eps_error / np.sqrt(2*max_compositions*np.log(2/eta0))
 
         prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(sampling_probability, noise_multiplier)
-        
+
         rdp = RDP(prv=prv, delta=self.delta_error/4)
         L = self.eps_error + rdp.compute_epsilon(max_compositions)[2]
         rdp = RDP(prv=prv, delta=self.delta_error/8/max_compositions)
