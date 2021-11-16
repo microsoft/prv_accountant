@@ -6,7 +6,7 @@ import sys
 import argparse
 import warnings
 
-from prv_accountant import Accountant, other_accountants, privacy_random_variables
+from prv_accountant import other_accountants, privacy_random_variables, PRVAccountant
 
 try:
     sys.skip_tf_privacy_import = True
@@ -53,18 +53,16 @@ def main() -> int:
 
     methods = {}
 
-    prv_acc = Accountant(
-        noise_multiplier=args.noise_multiplier,
-        sampling_probability=args.sampling_probability,
-        delta=args.delta,
-        max_compositions=args.num_compositions,
-        verbose=args.verbose,
-        eps_error=0.1
+    prv_acc = PRVAccountant(
+        prvs=prv,
+        max_self_compositions=args.num_compositions,
+        eps_error=0.1,
+        delta_error=args.delta/1000
     )
-    methods["PRV Accountant"] = lambda steps: prv_acc.compute_epsilon(steps)
+    methods["PRV Accountant"] = lambda steps: prv_acc.compute_epsilon(delta=args.delta, num_self_compositions=steps)
 
-    rdp_acc = other_accountants.RDP(prv=prv, delta=args.delta)
-    methods["RDP Accountant"] = lambda steps: rdp_acc.compute_epsilon(steps)
+    rdp_acc = other_accountants.RDP(prvs=[prv])
+    methods["RDP Accountant"] = lambda steps: rdp_acc.compute_epsilon(delta=args.delta, num_self_compositions=[steps])
 
     if TF_PRIVACY_AVAILABLE:
         def compute_eps_gdp(steps):

@@ -14,19 +14,19 @@ from .privacy_random_variables import PrivacyRandomVariableTruncated, PrivacyRan
 from . import privacy_random_variables
 
 
-def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_compositions: Sequence[int],
+def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_self_compositions: Sequence[int],
                              eps_error: float, delta_error: float) -> float:
     """
     Compute a safe domain size for PRVS
     """
-    total_compositions = sum(max_compositions)
+    total_compositions = sum(max_self_compositions)
 
     rdp = RDP(prvs=prvs)
-    L = rdp.compute_epsilon(delta=delta_error/4, num_compositions=max_compositions)[2]
+    L = rdp.compute_epsilon(delta=delta_error/4, num_self_compositions=max_self_compositions)[2]
 
     for prv in prvs:
         rdp = RDP(prvs=[prv])
-        L = max(L, rdp.compute_epsilon(delta=delta_error/8/total_compositions, num_compositions=[1])[2])
+        L = max(L, rdp.compute_epsilon(delta=delta_error/8/total_compositions, num_self_compositions=[1])[2])
     L = max(L, eps_error) + 3
     return L
 

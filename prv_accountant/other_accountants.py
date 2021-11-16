@@ -25,17 +25,17 @@ class RDP:
         self.rdps = [ np.array([prv.rdp(a) for a in self.orders]) for prv, _ in prvs ]
         self.num_compositions = [ n for _, n in prvs ]
 
-    def compute_epsilon(self, delta: float, num_compositions: Sequence[int]) -> Tuple[float, float, float]:
+    def compute_epsilon(self, delta: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
         Compute bounds on epsilon.
 
         This function is based on Google's TF Privacy:
         https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py 
         """
-        if len(num_compositions) != len(self.rdps):
+        if len(num_self_compositions) != len(self.rdps):
             raise ValueError()
 
-        rdp_steps = sum( rdp*n for rdp, n in zip(self.rdps, num_compositions) )
+        rdp_steps = sum( rdp*n for rdp, n in zip(self.rdps, num_self_compositions) )
         orders_vec = np.atleast_1d(self.orders)
         rdp_vec = np.atleast_1d(rdp_steps)
 
