@@ -129,26 +129,12 @@ class PRVAccountant:
         return f_n.compute_epsilon(delta, self.delta_error, self.eps_error)
 
 
-class DPSGDAccountant:
+class Accountant:
     def __init__(self, noise_multiplier: float, sampling_probability: float,
-                 delta: float, max_compositions: int, eps_error: float = None) -> None:
-        """
-        Create an PRV accountant for DP-SGD
-
-        For more details see https://arxiv.org/abs/2106.02848
-
-        :param float noise_multiplier: Noise multiplier of the DP-SGD training
-        :param float sampling_probability: Sampling probability of the training
-        :param float delta: Target delta value
-        :param int max_compositions: Max number of compositions this accountant is
-                                     used for. This value is used to estimate a
-                                     automatically determine a mesh size which
-                                     influences the accuracy of the privacy budget.
-        :param float eps_error: Allowed error in epsilon
-        :param float mesh_size: Mesh size of the pdf discretisation.
-                                (This is an upper bound the actual mesh size
-                                could be smaller.)
-        """
+                 delta: float, max_compositions: int, eps_error: float = None,
+                 mesh_size: float = None, verbose: bool = False) -> None:
+        warnings.warn("`Accountant` will be deprecated. Use `PRVAccountant` with `PoissonSubsampledGaussianMechanism` PRV instead.", DeprecationWarning)
+        assert mesh_size is None
 
         prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(
             sampling_probability=sampling_probability, noise_multiplier=noise_multiplier
@@ -167,12 +153,3 @@ class DPSGDAccountant:
         """
         return self.accountant.compute_epsilon(self.delta, [num_compositions])
 
-
-class Accountant(DPSGDAccountant):
-    def __init__(self, noise_multiplier: float, sampling_probability: float,
-                 delta: float, max_compositions: int, eps_error: float = None,
-                 mesh_size: float = None, verbose: bool = False) -> None:
-        warnings.warn("`Accountant` will be deprecated. Use `DPSGDAccountant` instead.", DeprecationWarning)
-        assert mesh_size is None
-        super().__init__(noise_multiplier=noise_multiplier, sampling_probability=sampling_probability,
-                         delta=delta, max_compositions=max_compositions, eps_error=eps_error)
