@@ -10,7 +10,7 @@ from . import discretisers
 from . import composers
 from .domain import Domain
 from .discrete_privacy_random_variable import DiscretePrivacyRandomVariable
-from .privacy_random_variables import PrivacyRandomVariableTruncated, PrivacyRandomVariable
+from .privacy_random_variables import NoRDPImplementation, PrivacyRandomVariableTruncated, PrivacyRandomVariable
 from . import privacy_random_variables
 
 
