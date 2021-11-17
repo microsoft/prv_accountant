@@ -9,7 +9,6 @@ from numpy import exp, sqrt
 from numpy import power as pow
 from scipy import special
 from scipy.special import erfc
-from typing import Any
 
 M_SQRT2 = sqrt(np.longdouble(2))
 M_PI = np.pi

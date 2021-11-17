@@ -2,7 +2,7 @@
 # Licensed under the MIT License.
 
 import numpy as np
-from typing import Iterable, Tuple, Union, Sequence
+from typing import Iterable, Tuple, Sequence
 from prv_accountant.privacy_random_variables import PrivacyRandomVariable
 
 
@@ -22,8 +22,8 @@ class RDP:
             orders = [1.0 + x / 10.0 for x in range(1, 100)] + list(range(12, 64))
         self.orders = np.array(orders)
 
-        self.rdps = [ np.array([prv.rdp(a) for a in self.orders]) for prv, _ in prvs ]
-        self.num_compositions = [ n for _, n in prvs ]
+        self.rdps = [np.array([prv.rdp(a) for a in self.orders]) for prv, _ in prvs]
+        self.num_compositions = [n for _, n in prvs]
 
     def compute_epsilon(self, delta: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
@@ -35,7 +35,7 @@ class RDP:
         if len(num_self_compositions) != len(self.rdps):
             raise ValueError()
 
-        rdp_steps = sum( rdp*n for rdp, n in zip(self.rdps, num_self_compositions) )
+        rdp_steps = sum(rdp*n for rdp, n in zip(self.rdps, num_self_compositions))
         orders_vec = np.atleast_1d(self.orders)
         rdp_vec = np.atleast_1d(rdp_steps)
 

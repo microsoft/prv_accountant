@@ -32,8 +32,8 @@ def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_self_com
 
 
 class PRVAccountant:
-    def __init__(self, prvs: Union[PrivacyRandomVariable, Sequence[PrivacyRandomVariable]],  
-                 eps_error: float, delta_error:float, 
+    def __init__(self, prvs: Union[PrivacyRandomVariable, Sequence[PrivacyRandomVariable]],
+                 eps_error: float, delta_error: float,
                  max_self_compositions: Sequence[int] = None,
                  eps_max: Optional[float] = None):
         """
@@ -44,7 +44,7 @@ class PRVAccountant:
         :param max_self_compositions: Maximum number of compositions of the PRV with itself.
         :type max_self_compositions: Sequence[int]
         :param eps_error: Maximum error allowed in $\varepsilon$. Typically around 0.1
-        :param delta_error: Maximum error allowed in $\delta$. typically around $10^{-3} \times \delta$
+        :param delta_error: Maximum error allowed in $\\delta$. typically around $10^{-3} \times \\delta$
         :param Optional[float] eps_max: Maximum number of valid epsilon. If the true epsilon exceeds this value the
                                         privacy calculation may be off. Setting `eps_max` to `None` automatically computes
                                         a suitable `eps_max` if the PRV supports it.
@@ -70,7 +70,8 @@ class PRVAccountant:
             L = eps_max
             warnings.warn(f"Assuming that true epsilon < {eps_max}. If this is not a valid assumption set `eps_max=None`.")
         else:
-            L = compute_safe_domain_size(self.prvs, max_self_compositions, eps_error=self.eps_error, delta_error=self.delta_error)
+            L = compute_safe_domain_size(self.prvs, max_self_compositions, eps_error=self.eps_error,
+                                         delta_error=self.delta_error)
 
         total_max_self_compositions = sum(max_self_compositions)
 
@@ -107,7 +108,7 @@ class PRVAccountant:
 
         :param float epsilon: Target epsilon
         :param Sequence[int] num_sefl_compositions: Number of compositions for each PRV with itself
-        :return: Return lower bound for $\delta$, estimate for $\delta$ and upper bound for $\delta$
+        :return: Return lower bound for $\\delta$, estimate for $\\delta$ and upper bound for $\\delta$
         :rtype: Tuple[float,float,float]
         """
         f_n = self.compute_composition(num_self_compositions)
@@ -116,7 +117,7 @@ class PRVAccountant:
         delta_upper = float(f_n.compute_delta_estimate(epsilon-self.eps_error)+self.delta_error)
         return (delta_lower, delta_estim, delta_upper)
 
-    def compute_epsilon(self, delta:float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
+    def compute_epsilon(self, delta: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
         Compute bounds for epsilon for a given delta
 
@@ -133,7 +134,8 @@ class Accountant:
     def __init__(self, noise_multiplier: float, sampling_probability: float,
                  delta: float, max_compositions: int, eps_error: float = None,
                  mesh_size: float = None, verbose: bool = False) -> None:
-        warnings.warn("`Accountant` will be deprecated. Use `PRVAccountant` with `PoissonSubsampledGaussianMechanism` PRV instead.", DeprecationWarning)
+        warnings.warn("`Accountant` will be deprecated. Use `PRVAccountant` with `PoissonSubsampledGaussianMechanism` "
+                      "PRV instead.", DeprecationWarning)
         assert mesh_size is None
 
         prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(
@@ -152,4 +154,3 @@ class Accountant:
         :rtype: Tuple[float,float,float]
         """
         return self.accountant.compute_epsilon(self.delta, [num_compositions])
-

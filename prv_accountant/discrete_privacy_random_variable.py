@@ -43,4 +43,3 @@ class DiscretePrivacyRandomVariable:
     def compute_delta_estimate(self, epsilon: float) -> float:
         t = self.domain.ts()
         return float(np.where(t >= epsilon, self.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
-

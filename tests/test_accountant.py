@@ -18,9 +18,10 @@ class TestPRVAccountant:
     @pytest.mark.parametrize("max_compositions", [10_000, 10_001, 10_002])
     def test_gaussian_mechanism_analytic_homogeneous(self, eps_error, delta_error, max_compositions):
         noise_multiplier = 100.0
-        prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(sampling_probability=1.0, noise_multiplier=noise_multiplier)
-        accountant = PRVAccountant(prvs=[prv], max_self_compositions=[max_compositions], eps_error=eps_error, delta_error=delta_error)
-
+        prv = privacy_random_variables.PoissonSubsampledGaussianMechanism(sampling_probability=1.0,
+                                                                          noise_multiplier=noise_multiplier)
+        accountant = PRVAccountant(prvs=[prv], max_self_compositions=[max_compositions], eps_error=eps_error,
+                                   delta_error=delta_error)
 
         for compositions in [9_999, 10_000]:
             for eps in [1e-1, 1e0, 1e1, 1e2]:
@@ -31,13 +32,13 @@ class TestPRVAccountant:
                 assert delta_lower <= delta_exact
                 assert delta_exact <= delta_upper
 
-    
     @pytest.mark.parametrize("eps_error", [1e0, 1e-1, 1e-2])
     @pytest.mark.parametrize("delta_error", [1e-9, 1e-10, 1e-11])
     def test_gaussian_mechanism_analytic_heterogeneous(self, eps_error, delta_error):
         prv_1 = privacy_random_variables.PoissonSubsampledGaussianMechanism(sampling_probability=1.0, noise_multiplier=10.0)
         prv_2 = privacy_random_variables.PoissonSubsampledGaussianMechanism(sampling_probability=1.0, noise_multiplier=5.0)
-        accountant = PRVAccountant(prvs=[prv_1, prv_2], max_self_compositions=[50, 50], eps_error=eps_error, delta_error=delta_error)
+        accountant = PRVAccountant(prvs=[prv_1, prv_2], max_self_compositions=[50, 50], eps_error=eps_error,
+                                   delta_error=delta_error)
 
         delta_lower, _, delta_upper = accountant.compute_delta(4, [50, 50])
 
@@ -84,11 +85,10 @@ class TestPRVAccountant:
             delta_error=1e-8
         ).compute_epsilon(delta=target_delta, num_self_compositions=[4900])[2]
         for m_c in range(4900, 5000):
-            eps_hi= PRVAccountant(
+            eps_hi = PRVAccountant(
                 prvs=[prv],
                 max_self_compositions=[m_c],
                 eps_error=0.1,
                 delta_error=1e-8
             ).compute_epsilon(delta=target_delta, num_self_compositions=[4900])[2]
             assert eps_hi == pytest.approx(eps_hi_target, 1e-3)
-
