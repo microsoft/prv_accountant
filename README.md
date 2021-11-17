@@ -12,9 +12,61 @@ pip install prv-accountant
 
 ## Examples
 
+
+### Heterogeneous Composition
+
+It is also possible to compose different mechanisms.
+The following example will compute the composition of three different mechanisms $M^{(a)}, M^{(b)}$ and $M^{(c)}$ composed with themselves $m, n$ and $o$ times.
+
+An application for such a composition is DP-SGD training with increasing batch size and therefore increasing sampling probability.
+After $m+n+o$ training steps, the resulting privacy mechanism $M$ for the whole training process is given by
+$$
+M = M_1^{(a)} \circ \dots \circ M_m^{(a)} \circ M_1^{(b)} \circ \dots \circ M_n^{(b)} \circ M_1^{(c)} \circ \dots \circ M_o^{(c)} \; .
+$$
+
+Using the `prv_accountant` we need to create a privacy random variable for each mechanism
+
+```python
+from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism
+
+prv_a = PoissonSubsampledGaussianMechanism(noise_multiplier=0.8, sampling_probability=5e-3)
+prv_b = PoissonSubsampledGaussianMechanism(noise_multiplier=0.8, sampling_probability=1e-2)
+prv_c = PoissonSubsampledGaussianMechanism(noise_multiplier=0.8, sampling_probability=2e-2)
+
+m = 100
+n = 200
+o = 100
+```
+
+Next, we need to create an accountant instance.
+The accountant will take care of most of the numerical intricacies such as finding the support of the PRV and discretisation.
+In order to find a suitable domain, the accountant needs to know about the largest number of compositions of each PRV with itself that will be computed.
+Larger values of `max_self_compositions` lead to larger domains which can cause slower performance.
+Additionally, the desired error bounds for $\varepsilon$ and $\delta$ are required.
+
+```python
+from prv_accountant import PRVAccountant
+
+accountant = PRVAccountant(
+    prvs=[prv_a, prv_b, prv_c]
+    max_self_compositions=[1_000, 1_000, 1_000]
+    eps_error=0.1,
+    delta_error=1e-10
+)
+```
+
+Finally, we're ready to compute the composition.
+The final bounds and estimates for $\varepsilon$ for the mechanism $M$ are
+
+```python
+eps_low, eps_est, eps_up = accountant.compute_epsilon(delta=1e-6, num_self_compositions=[m, n, o])
+```
+
+
 ### DP-SGD
 
-Getting epsilon estimate directly from the command line.
+For homogeneous DP-SGD (i.e. constant noise multiplier and constant sampling probability) things are even simpler.
+We provide a simple command line utility for getting epsilon estimates.
 
 ```
 compute-dp-epsilon --sampling-probability 5e-3 --noise-multiplier 0.8 --delta 1e-6 --num-compositions 1000
@@ -38,8 +90,6 @@ eps_low, eps_estimate, eps_upper = accountant.compute_epsilon(num_compositions=1
 
 For more examples, have a look in the `notebooks` directory.
 
-
-### Heterogeneous Composition
 
 
 ## References
