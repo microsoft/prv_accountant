@@ -28,7 +28,7 @@ class RDP:
         Compute bounds on epsilon.
 
         This function is based on Google's TF Privacy:
-        https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py 
+        https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py
         """
         rdp_steps = self.rdp*num_compositions
         orders_vec = np.atleast_1d(self.orders)
