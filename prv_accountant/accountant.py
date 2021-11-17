@@ -68,12 +68,12 @@ class Accountant:
 
         self.f_0 = discretisers.CellCentred().discretise(prv_trunc, domain)
 
-        self.composer = composers.Fourier(self.f_0)
+        self.composer = composers.Fourier([self.f_0])
 
     def compute_compositions(self, num_compositions: int) -> DiscretePrivacyRandomVariable:
         if num_compositions > self.max_compositions:
             raise ValueError("Requested number of compositions exceeds the maximum number of compositions")
-        return self.composer.compute_composition(num_compositions)
+        return self.composer.compute_composition([num_compositions])
 
     def compute_delta_upper(self, f_n: DiscretePrivacyRandomVariable, epsilon: float) -> float:
         return self.compute_delta(f_n, epsilon-self.eps_error)+self.delta_error
