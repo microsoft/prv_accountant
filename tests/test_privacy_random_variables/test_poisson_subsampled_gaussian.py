@@ -7,7 +7,8 @@ import pytest
 import numpy as np
 import sys
 
-from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log, PrivacyRandomVariableTruncated
+from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log
+
 
 def test_safe_log():
     assert np.isnan(log(-1)) == True
