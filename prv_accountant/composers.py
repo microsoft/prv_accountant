@@ -15,6 +15,7 @@ class Composer(ABC):
     def __init__(self, prvs: Sequence[DiscretePrivacyRandomVariable]) -> None:
         """
         Abstract base class for a composing mechanism.
+
         :param Sequence[DiscretePrivacyRandomVariable] prvs: Sequence of discrete PRVs to compose
         """
         self.prvs = prvs
@@ -25,7 +26,6 @@ class Composer(ABC):
         Abstract method to compute the composition of PRVs
 
         :param num_self_compositions: The number of composition for each PRV with itself. The length of this sequence needs to match `self.prvs`. The total number of compositions is the sum of `num_self_compositions`.
-
         :type num_self_compositions: Sequence[int] 
         """
         pass

@@ -30,7 +30,7 @@ class RDP:
         Compute bounds on epsilon.
 
         This function is based on Google's TF Privacy:
-        https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py 
+        https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py
         """
         if len(num_self_compositions) != len(self.rdps):
             raise ValueError()
