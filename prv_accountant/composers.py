@@ -53,7 +53,7 @@ class Fourier(Composer):
 
     def compute_composition(self, num_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
         """Compute the composition of the PRV `num_composition` times with itself."""
-        if len(num_compositions) != 1:
+        if len(num_compositions) != len(self.prvs):
             raise ValueError("Length of `num_compositions` needs to match length of PRVs.")
         num_compositions = num_compositions[0]
 
