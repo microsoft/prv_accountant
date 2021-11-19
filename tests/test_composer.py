@@ -29,7 +29,7 @@ class TestFourier:
         prv = DiscretePrivacyRandomVariable(pmf, domain)
 
         with pytest.raises(ValueError):
-            composer = composers.Fourier([prv, prv])
+            composers.Fourier([prv, prv])
 
     def test_gaussian_analytical(self):
         """
@@ -57,7 +57,7 @@ class TestFourier:
         prv = DiscretePrivacyRandomVariable(pmf, domain)
 
         with pytest.raises(ValueError):
-            composer = composers.Fourier([prv, prv])
+            composers.Fourier([prv, prv])
 
 
 class TestConvolutionTree:

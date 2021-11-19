@@ -10,9 +10,10 @@ import sys
 from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log
 
 
+
 def test_safe_log():
-    assert np.isnan(log(-1)) == True
-    assert np.isneginf(log(0)) == True
+    assert np.isnan(log(-1)) == True  # noqa: E712
+    assert np.isneginf(log(0)) == True  # noqa: E712
     assert log(1) == pytest.approx(0)
 
 

@@ -17,8 +17,8 @@ M_PI = np.pi
 def log(x):
     valid = (x > 0)
     x_is_0 = (x == 0)
-    return np.where(valid, np.log(np.where(valid, x, 1)), 
-        np.where(x_is_0, -np.inf, np.nan))
+    return np.where(valid, np.log(np.where(valid, x, 1)),
+                    np.where(x_is_0, -np.inf, np.nan))
 
 
 
@@ -47,7 +47,7 @@ class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
     def cdf(self, t):
         sigma = self.sigma
         p = self.p
-        z = np.where(t>0, log((p-1)/p + exp(t)/p), log((p-1)/p + exp(t)/p))
+        z = np.where(t > 0, log((p-1)/p + exp(t)/p), log((p-1)/p + exp(t)/p))
         return np.where(t > log(1 - p), (
                 (1.0/2.0) * p * (-erfc(np.double((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*z - 1)/sigma))) -
                 1.0/2.0*(p - 1) * (-erfc(np.double((1.0/4.0)*M_SQRT2*(2*pow(sigma, 2)*z + 1)/sigma))) + 1
@@ -59,8 +59,8 @@ class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
     def rdp(self, alpha: float) -> float:
         """
         Compute RDP of this mechanism of order alpha
-        
-        Based on Google's TF Privacy: https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py 
+
+        Based on Google's TF Privacy: https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py  # noqa: E501
         """
         if self.p == 0:
             return 0
@@ -75,7 +75,7 @@ class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
 
 
 # The following code is based on Google's TF Privacy
-# https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py 
+# https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py
 
 def _compute_log_a(q, sigma, alpha):
     """Compute log(A_alpha) for any positive finite alpha."""

@@ -34,7 +34,7 @@ class DiscretePrivacyRandomVariable:
             if i <= 0:
                 raise RuntimeError("Cannot compute epsilon")
             return np.log((d1[i-1]-delta_target)/d2[i-1])
-       
+
         eps_upper = find_epsilon(delta - delta_error) + epsilon_error
         eps_lower = find_epsilon(delta + delta_error) - epsilon_error
         eps_estimate = find_epsilon(delta)
@@ -43,4 +43,3 @@ class DiscretePrivacyRandomVariable:
     def compute_delta_estimate(self, epsilon: float) -> float:
         t = self.domain.ts()
         return float(np.where(t >= epsilon, self.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
-

@@ -15,6 +15,7 @@ class Composer(ABC):
     def __init__(self, prvs: Sequence[DiscretePrivacyRandomVariable]) -> None:
         """
         Abstract base class for a composing mechanism.
+
         :param Sequence[DiscretePrivacyRandomVariable] prvs: Sequence of discrete PRVs to compose
         """
         self.prvs = prvs
@@ -24,9 +25,10 @@ class Composer(ABC):
         """
         Abstract method to compute the composition of PRVs
 
-        :param num_self_compositions: The number of composition for each PRV with itself. The length of this sequence needs to match `self.prvs`. The total number of compositions is the sum of `num_self_compositions`.
-
-        :type num_self_compositions: Sequence[int] 
+        :param num_self_compositions: The number of composition for each PRV with itself. The length of this sequence needs to
+                                      match `self.prvs`. The total number of compositions is the sum of
+                                      `num_self_compositions`.
+        :type num_self_compositions: Sequence[int]
         """
         pass
 
@@ -75,7 +77,8 @@ class ConvolutionTree(Composer):
         """
         Create a composer for efficiently composing heterogeneous PRVs.
 
-        This composer runs in $n \log n$ where $n$ is the total number of compositions. Hence, it isn't optimal for homogeneous composition. Use the Fourier composer for homogeneous composition instead.
+        This composer runs in $n \\log n$ where $n$ is the total number of compositions. Hence, it isn't optimal for
+        homogeneous composition. Use the Fourier composer for homogeneous composition instead.
 
         :param Sequence[DiscretePrivacyRandomVariable] prvs: Sequence of discrete PRVs to compose
         """
@@ -89,7 +92,7 @@ class ConvolutionTree(Composer):
 
         :param num_self_compositions: The number of composition for each PRV with itself.
 
-        :type num_self_compositions: Sequence[int] 
+        :type num_self_compositions: Sequence[int]
         """
         if (np.array(num_self_compositions)-1).any():
             raise ValueError("Cannot handle homogeneous composition. Use Fourier composer for that.")
@@ -104,7 +107,8 @@ class ConvolutionTree(Composer):
             prvs = prvs_conv
         return prvs[0]
 
-    def _add_prvs(self, prv_L: DiscretePrivacyRandomVariable, prv_R: DiscretePrivacyRandomVariable) -> DiscretePrivacyRandomVariable:
+    def _add_prvs(self, prv_L: DiscretePrivacyRandomVariable,
+                  prv_R: DiscretePrivacyRandomVariable) -> DiscretePrivacyRandomVariable:
         f = convolve(prv_L.pmf, prv_R.pmf, mode="same")
         domain = prv_L.domain.shift_right(prv_R.domain.shifts())
         return DiscretePrivacyRandomVariable(f, domain)
@@ -115,7 +119,8 @@ class Heterogeneous(Composer):
         """
         Create a heterogeneous composer.
 
-        This composer first composes identical PRVs with itself using Fourier composition followed by pairwise convolution for the remaining PRVs.
+        This composer first composes identical PRVs with itself using Fourier composition followed by pairwise convolution for
+        the remaining PRVs.
 
         :param Sequence[DiscretePrivacyRandomVariable] prvs: Sequence of discrete PRVs to compose
         """
@@ -127,9 +132,11 @@ class Heterogeneous(Composer):
         """
         Compute the composition of PRVs
 
-        :param num_self_compositions: The number of composition for each PRV with itself. The length of this sequence needs to match `self.prvs`. The total number of compositions is the sum of `num_self_compositions`.
+        :param num_self_compositions: The number of composition for each PRV with itself. The length of this sequence needs to
+                                      match `self.prvs`. The total number of compositions is the sum of
+                                      `num_self_compositions`.
 
-        :type num_self_compositions: Sequence[int] 
+        :type num_self_compositions: Sequence[int]
         """
         if len(num_self_compositions) != len(self.prvs):
             raise ValueError("")
