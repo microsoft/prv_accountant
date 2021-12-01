@@ -139,6 +139,6 @@ class Heterogeneous(Composer):
         :type num_self_compositions: Sequence[int]
         """
         if len(num_self_compositions) != len(self.prvs):
-            raise ValueError("")
+            raise ValueError("Length of `num_self_compositions` need to match number of PRVs passed to the composer.")
         self_composed_prvs = [sc.compute_composition([n]) for sc, n in zip(self.self_composers, num_self_compositions)]
         return ConvolutionTree(self_composed_prvs).compute_composition([1]*len(num_self_compositions))

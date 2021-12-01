@@ -29,7 +29,7 @@ class RDP:
         https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py
         """
         if len(num_self_compositions) != len(self.rdps):
-            raise ValueError()
+            raise ValueError("Length of `num_self_compositions` need to match number of PRVs passed to the RDP accountant.")
 
         rdp_steps = sum(rdp*n for rdp, n in zip(self.rdps, num_self_compositions))
         orders_vec = np.atleast_1d(self.orders)
