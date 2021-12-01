@@ -15,15 +15,11 @@ class RDP:
         :param float delta:
         :param Iterable[float] orders:
         """
-        if isinstance(prvs[0], PrivacyRandomVariable):
-            prvs = [(prv, 1) for prv in prvs]
-
         if not orders:
             orders = [1.0 + x / 10.0 for x in range(1, 100)] + list(range(12, 64))
         self.orders = np.array(orders)
 
-        self.rdps = [np.array([prv.rdp(a) for a in self.orders]) for prv, _ in prvs]
-        self.num_compositions = [n for _, n in prvs]
+        self.rdps = [np.array([prv.rdp(a) for a in self.orders]) for prv in prvs]
 
     def compute_epsilon(self, delta: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
