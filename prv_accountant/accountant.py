@@ -26,6 +26,7 @@ def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_self_com
 
     for prv in prvs:
         rdp = RDP(prvs=[prv])
+        # For details about the constants see https://arxiv.org/abs/2106.02848
         L = max(L, rdp.compute_epsilon(delta=delta_error/8/total_compositions, num_self_compositions=[1])[2])
     L = max(L, eps_error) + 3
     return L
