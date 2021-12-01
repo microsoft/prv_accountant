@@ -91,7 +91,6 @@ eps_low, eps_estimate, eps_upper = accountant.compute_epsilon(num_compositions=1
 For more examples, have a look in the `notebooks` directory.
 
 
-
 ## References
 
 [1] Sivakanth Gopi, Yin Tat Lee, Lukas Wutschitz. Numerical Composition of Differential Privacy. arXiv. Preprint posted online June 5, 2021. [arXiv](https://arxiv.org/abs/2106.02848)
