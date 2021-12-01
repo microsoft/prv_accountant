@@ -108,7 +108,7 @@ class PRVAccountant:
 
     def compute_delta(self, epsilon: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
-        Compute bounds for delta for a given epsilon
+        Compute delta bounds for a given epsilon
 
         :param float epsilon: Target epsilon
         :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself
@@ -123,7 +123,7 @@ class PRVAccountant:
 
     def compute_epsilon(self, delta: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
-        Compute bounds for epsilon for a given delta
+        Compute epsilon bounds for a given delta
 
         :param float delta: Target delta
         :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself
