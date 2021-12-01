@@ -70,7 +70,7 @@ class PRVAccountant:
         if len(max_self_compositions) != len(prvs):
             raise ValueError()
 
-        if eps_max:
+        if eps_max is not None:
             L = eps_max
             warnings.warn(f"Assuming that true epsilon < {eps_max}. If this is not a valid assumption set `eps_max=None`.")
         else:
