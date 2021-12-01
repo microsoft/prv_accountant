@@ -79,8 +79,8 @@ class PRVAccountant:
 
         total_max_self_compositions = sum(max_self_compositions)
 
-        eta0 = self.delta_error/3
-        mesh_size = 2*eps_error / np.sqrt(2*total_max_self_compositions*np.log(2/eta0))
+        # See Theorem 5.5 in https://arxiv.org/pdf/2106.02848.pdf
+        mesh_size = self.eps_error / np.sqrt(total_max_self_compositions/2*np.log(12/self.delta_error))
         domain = Domain.create_aligned(-L, L, mesh_size)
 
         tprvs = [PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max()) for prv in prvs]
