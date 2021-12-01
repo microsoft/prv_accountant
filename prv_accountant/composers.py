@@ -88,7 +88,7 @@ class ConvolutionTree(Composer):
         """
         Compute the composition of PRVs.
 
-        Since this composer is not efficient for homogeneous composition. `num_self_composition` is expected to be 1.
+        Since this composer is not efficient for homogeneous composition, each entry `num_self_compositions` is expected to be 1.
 
         :param num_self_compositions: The number of composition for each PRV with itself.
 
