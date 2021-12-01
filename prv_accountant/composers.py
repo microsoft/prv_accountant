@@ -94,7 +94,7 @@ class ConvolutionTree(Composer):
 
         :type num_self_compositions: Sequence[int]
         """
-        if (np.array(num_self_compositions)-1).any():
+        if (np.array(num_self_compositions) == 1).all():
             raise ValueError("Cannot handle homogeneous composition. Use Fourier composer for that.")
         prvs = self.prvs
         while len(prvs) > 1:
