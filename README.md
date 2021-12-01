@@ -42,6 +42,7 @@ Next, we need to create an accountant instance.
 The accountant will take care of most of the numerical intricacies such as finding the support of the PRV and discretisation.
 In order to find a suitable domain, the accountant needs to know about the largest number of compositions of each PRV with itself that will be computed.
 Larger values of `max_self_compositions` lead to larger domains which can cause slower performance.
+In the case of DP-SGD, a reasonable choice of `max_self_compositions` would be the total number of training steps.
 Additionally, the desired error bounds for $\varepsilon$ and $\delta$ are required.
 
 ```python
