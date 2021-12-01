@@ -17,19 +17,22 @@ from . import privacy_random_variables
 def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_self_compositions: Sequence[int],
                              eps_error: float, delta_error: float) -> float:
     """
-    Compute a safe domain size for PRVS
+    Compute a safe domain size for the discretisation of the PRVs
+
+    For details about this algorithm see remark 5.6 in
+    https://www.microsoft.com/en-us/research/publication/numerical-composition-of-differential-privacy/
     """
     total_compositions = sum(max_self_compositions)
 
     rdp = RDP(prvs=prvs)
-    L = rdp.compute_epsilon(delta=delta_error/4, num_self_compositions=max_self_compositions)[2]
+    _, _, L_max = rdp.compute_epsilon(delta=delta_error/4, num_self_compositions=max_self_compositions)
 
     for prv in prvs:
         rdp = RDP(prvs=[prv])
-        # For details about the constants see https://arxiv.org/abs/2106.02848
-        L = max(L, rdp.compute_epsilon(delta=delta_error/8/total_compositions, num_self_compositions=[1])[2])
-    L = max(L, eps_error) + 3
-    return L
+        _, _, L = rdp.compute_epsilon(delta=delta_error/8/total_compositions, num_self_compositions=[1])
+        L_max = max(L_max, L)
+    L_max = max(L_max, eps_error) + 3
+    return L_max
 
 
 class PRVAccountant:
