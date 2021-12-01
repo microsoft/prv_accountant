@@ -91,7 +91,7 @@ class PRVAccountant:
         """
         Compute the composition of the PRVs
 
-        :param Sequence[int] num_compositions: Number of compositions for each PRV
+        :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself
         :return Composed PRV
         :rtype: DiscretePrivacyRandomVariable
         """
@@ -111,7 +111,7 @@ class PRVAccountant:
         Compute bounds for delta for a given epsilon
 
         :param float epsilon: Target epsilon
-        :param Sequence[int] num_sefl_compositions: Number of compositions for each PRV with itself
+        :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself
         :return: Return lower bound for $\\delta$, estimate for $\\delta$ and upper bound for $\\delta$
         :rtype: Tuple[float,float,float]
         """
