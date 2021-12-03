@@ -16,7 +16,7 @@ pip install prv-accountant
 ### Heterogeneous Composition
 
 It is also possible to compose different mechanisms.
-The following example will compute the composition of three different mechanisms $M^{(a)}, M^{(b)}$ and $M^{(c)}$ composed with themselves $m, n$ and $o$ times.
+The following example will compute the composition of three different mechanisms $M^{(a)}, M^{(b)}$ and $M^{(c)}$ composed with themselves $m, n$ and $o$ times, respectively.
 
 An application for such a composition is DP-SGD training with increasing batch size and therefore increasing sampling probability.
 After $m+n+o$ training steps, the resulting privacy mechanism $M$ for the whole training process is given by
