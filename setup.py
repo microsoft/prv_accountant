@@ -28,7 +28,8 @@ setuptools.setup(
             "tensorflow-privacy",
             "nbconvert",
             "pandas",
-            "pytest"
+            "pytest",
+            "flake8"
         ]
     },
     install_requires=[

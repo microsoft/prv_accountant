@@ -39,3 +39,7 @@ class DiscretePrivacyRandomVariable:
         eps_lower = find_epsilon(delta + delta_error) - epsilon_error
         eps_estimate = find_epsilon(delta)
         return float(eps_lower), float(eps_estimate), float(eps_upper)
+
+    def compute_delta_estimate(self, epsilon: float) -> float:
+        t = self.domain.ts()
+        return float(np.where(t >= epsilon, self.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
