@@ -15,7 +15,7 @@ pip install prv-accountant
 
 ### Heterogeneous Composition
 
-It is also possible to compose different mechanisms.
+It is possible to compose different mechanisms.
 The following example will compute the composition of three different mechanisms <img src="https://render.githubusercontent.com/render/math?math=M^{(a)}, M^{(b)}"> and <img src="https://render.githubusercontent.com/render/math?math=M^{(c)}"> composed with themselves <img src="https://render.githubusercontent.com/render/math?math=m, n">
  and <img src="https://render.githubusercontent.com/render/math?math=o"> times, respectively.
 
