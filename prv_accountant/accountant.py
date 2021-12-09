@@ -17,18 +17,22 @@ from . import privacy_random_variables
 def compute_safe_domain_size(prvs: Sequence[PrivacyRandomVariable], max_self_compositions: Sequence[int],
                              eps_error: float, delta_error: float) -> float:
     """
-    Compute a safe domain size for PRVS
+    Compute a safe domain size for the discretisation of the PRVs
+
+    For details about this algorithm see remark 5.6 in
+    https://www.microsoft.com/en-us/research/publication/numerical-composition-of-differential-privacy/
     """
     total_compositions = sum(max_self_compositions)
 
     rdp = RDP(prvs=prvs)
-    L = rdp.compute_epsilon(delta=delta_error/4, num_self_compositions=max_self_compositions)[2]
+    _, _, L_max = rdp.compute_epsilon(delta=delta_error/4, num_self_compositions=max_self_compositions)
 
     for prv in prvs:
         rdp = RDP(prvs=[prv])
-        L = max(L, rdp.compute_epsilon(delta=delta_error/8/total_compositions, num_self_compositions=[1])[2])
-    L = max(L, eps_error) + 3
-    return L
+        _, _, L = rdp.compute_epsilon(delta=delta_error/8/total_compositions, num_self_compositions=[1])
+        L_max = max(L_max, L)
+    L_max = max(L_max, eps_error) + 3
+    return L_max
 
 
 class PRVAccountant:
@@ -66,7 +70,7 @@ class PRVAccountant:
         if len(max_self_compositions) != len(prvs):
             raise ValueError()
 
-        if eps_max:
+        if eps_max is not None:
             L = eps_max
             warnings.warn(f"Assuming that true epsilon < {eps_max}. If this is not a valid assumption set `eps_max=None`.")
         else:
@@ -75,8 +79,8 @@ class PRVAccountant:
 
         total_max_self_compositions = sum(max_self_compositions)
 
-        eta0 = self.delta_error/3
-        mesh_size = 2*eps_error / np.sqrt(2*total_max_self_compositions*np.log(2/eta0))
+        # See Theorem 5.5 in https://arxiv.org/pdf/2106.02848.pdf
+        mesh_size = self.eps_error / np.sqrt(total_max_self_compositions/2*np.log(12/self.delta_error))
         domain = Domain.create_aligned(-L, L, mesh_size)
 
         tprvs = [PrivacyRandomVariableTruncated(prv, domain.t_min(), domain.t_max()) for prv in prvs]
@@ -87,7 +91,7 @@ class PRVAccountant:
         """
         Compute the composition of the PRVs
 
-        :param Sequence[int] num_compositions: Number of compositions for each PRV
+        :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself
         :return Composed PRV
         :rtype: DiscretePrivacyRandomVariable
         """
@@ -104,10 +108,10 @@ class PRVAccountant:
 
     def compute_delta(self, epsilon: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
-        Compute bounds for delta for a given epsilon
+        Compute delta bounds for a given epsilon
 
         :param float epsilon: Target epsilon
-        :param Sequence[int] num_sefl_compositions: Number of compositions for each PRV with itself
+        :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself
         :return: Return lower bound for $\\delta$, estimate for $\\delta$ and upper bound for $\\delta$
         :rtype: Tuple[float,float,float]
         """
@@ -119,7 +123,7 @@ class PRVAccountant:
 
     def compute_epsilon(self, delta: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
-        Compute bounds for epsilon for a given delta
+        Compute epsilon bounds for a given delta
 
         :param float delta: Target delta
         :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself

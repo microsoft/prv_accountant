@@ -25,7 +25,7 @@ class Composer(ABC):
         """
         Abstract method to compute the composition of PRVs
 
-        :param num_self_compositions: The number of composition for each PRV with itself. The length of this sequence needs to
+        :param num_self_compositions: The number of compositions for each PRV with itself. The length of this sequence needs to
                                       match `self.prvs`. The total number of compositions is the sum of
                                       `num_self_compositions`.
         :type num_self_compositions: Sequence[int]
@@ -55,9 +55,9 @@ class Fourier(Composer):
         self.domain = prv.domain
 
     def compute_composition(self, num_self_compositions: Sequence[int]) -> DiscretePrivacyRandomVariable:
-        """Compute the composition of the PRV `num_composition` times with itself."""
+        """Compute the composition of the PRV `num_self_compositions` times with itself."""
         if len(num_self_compositions) != 1:
-            raise ValueError("Length of `num_compositions` needs to match length of PRVs.")
+            raise ValueError("Length of `num_self_compositions` needs to match length of PRVs.")
         num_compositions = num_self_compositions[0]
 
         f_n = irfft(self.F**num_compositions)
@@ -88,13 +88,14 @@ class ConvolutionTree(Composer):
         """
         Compute the composition of PRVs.
 
-        Since this composer is not efficient for homogeneous composition. `num_self_composition` is expected to be 1.
+        Since this composer is not efficient for homogeneous composition, each entry `num_self_compositions` is expected
+        to be 1.
 
-        :param num_self_compositions: The number of composition for each PRV with itself.
+        :param num_self_compositions: The number of compositions for each PRV with itself.
 
         :type num_self_compositions: Sequence[int]
         """
-        if (np.array(num_self_compositions)-1).any():
+        if (np.array(num_self_compositions) != 1).any():
             raise ValueError("Cannot handle homogeneous composition. Use Fourier composer for that.")
         prvs = self.prvs
         while len(prvs) > 1:
@@ -139,6 +140,6 @@ class Heterogeneous(Composer):
         :type num_self_compositions: Sequence[int]
         """
         if len(num_self_compositions) != len(self.prvs):
-            raise ValueError("")
+            raise ValueError("Length of `num_self_compositions` need to match number of PRVs passed to the composer.")
         self_composed_prvs = [sc.compute_composition([n]) for sc, n in zip(self.self_composers, num_self_compositions)]
         return ConvolutionTree(self_composed_prvs).compute_composition([1]*len(num_self_compositions))

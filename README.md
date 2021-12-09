@@ -15,14 +15,12 @@ pip install prv-accountant
 
 ### Heterogeneous Composition
 
-It is also possible to compose different mechanisms.
-The following example will compute the composition of three different mechanisms $M^{(a)}, M^{(b)}$ and $M^{(c)}$ composed with themselves $m, n$ and $o$ times.
+It is possible to compose different mechanisms.
+The following example will compute the composition of three different mechanisms <img src="https://render.githubusercontent.com/render/math?math=M^{(a)}, M^{(b)}"> and <img src="https://render.githubusercontent.com/render/math?math=M^{(c)}"> composed with themselves <img src="https://render.githubusercontent.com/render/math?math=m, n">
+ and <img src="https://render.githubusercontent.com/render/math?math=o"> times, respectively.
 
 An application for such a composition is DP-SGD training with increasing batch size and therefore increasing sampling probability.
-After $m+n+o$ training steps, the resulting privacy mechanism $M$ for the whole training process is given by
-$$
-M = M_1^{(a)} \circ \dots \circ M_m^{(a)} \circ M_1^{(b)} \circ \dots \circ M_n^{(b)} \circ M_1^{(c)} \circ \dots \circ M_o^{(c)} \; .
-$$
+After <img src="https://render.githubusercontent.com/render/math?math=m%2bn%2bo"> training steps, the resulting privacy mechanism <img src="https://render.githubusercontent.com/render/math?math=M"> for the whole training process is given by <img src="https://render.githubusercontent.com/render/math?math=M = M_1^{(a)} \circ \dots \circ M_m^{(a)} \circ M_1^{(b)} \circ \dots \circ M_n^{(b)} \circ M_1^{(c)} \circ \dots \circ M_o^{(c)}">.
 
 Using the `prv_accountant` we need to create a privacy random variable for each mechanism
 
@@ -42,21 +40,22 @@ Next, we need to create an accountant instance.
 The accountant will take care of most of the numerical intricacies such as finding the support of the PRV and discretisation.
 In order to find a suitable domain, the accountant needs to know about the largest number of compositions of each PRV with itself that will be computed.
 Larger values of `max_self_compositions` lead to larger domains which can cause slower performance.
-Additionally, the desired error bounds for $\varepsilon$ and $\delta$ are required.
+In the case of DP-SGD, a reasonable choice of `max_self_compositions` would be the total number of training steps.
+Additionally, the desired error bounds for <img src="https://render.githubusercontent.com/render/math?math=\varepsilon"> and <img src="https://render.githubusercontent.com/render/math?math=\delta"> are required.
 
 ```python
 from prv_accountant import PRVAccountant
 
 accountant = PRVAccountant(
-    prvs=[prv_a, prv_b, prv_c]
-    max_self_compositions=[1_000, 1_000, 1_000]
+    prvs=[prv_a, prv_b, prv_c],
+    max_self_compositions=[1_000, 1_000, 1_000],
     eps_error=0.1,
     delta_error=1e-10
 )
 ```
 
 Finally, we're ready to compute the composition.
-The final bounds and estimates for $\varepsilon$ for the mechanism $M$ are
+The final bounds and estimates for <img src="https://render.githubusercontent.com/render/math?math=\varepsilon"> for the mechanism <img src="https://render.githubusercontent.com/render/math?math=M"> are
 
 ```python
 eps_low, eps_est, eps_up = accountant.compute_epsilon(delta=1e-6, num_self_compositions=[m, n, o])
@@ -89,7 +88,6 @@ eps_low, eps_estimate, eps_upper = accountant.compute_epsilon(num_compositions=1
 ```
 
 For more examples, have a look in the `notebooks` directory.
-
 
 
 ## References

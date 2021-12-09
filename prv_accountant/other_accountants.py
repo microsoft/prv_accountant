@@ -15,15 +15,11 @@ class RDP:
         :param float delta:
         :param Iterable[float] orders:
         """
-        if isinstance(prvs[0], PrivacyRandomVariable):
-            prvs = [(prv, 1) for prv in prvs]
-
         if not orders:
             orders = [1.0 + x / 10.0 for x in range(1, 100)] + list(range(12, 64))
         self.orders = np.array(orders)
 
-        self.rdps = [np.array([prv.rdp(a) for a in self.orders]) for prv, _ in prvs]
-        self.num_compositions = [n for _, n in prvs]
+        self.rdps = [np.array([prv.rdp(a) for a in self.orders]) for prv in prvs]
 
     def compute_epsilon(self, delta: float, num_self_compositions: Sequence[int]) -> Tuple[float, float, float]:
         """
@@ -33,7 +29,7 @@ class RDP:
         https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/analysis/rdp_accountant.py
         """
         if len(num_self_compositions) != len(self.rdps):
-            raise ValueError()
+            raise ValueError("Length of `num_self_compositions` need to match number of PRVs passed to the RDP accountant.")
 
         rdp_steps = sum(rdp*n for rdp, n in zip(self.rdps, num_self_compositions))
         orders_vec = np.atleast_1d(self.orders)
