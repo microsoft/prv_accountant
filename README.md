@@ -47,8 +47,8 @@ Additionally, the desired error bounds for <img src="https://render.githubuserco
 from prv_accountant import PRVAccountant
 
 accountant = PRVAccountant(
-    prvs=[prv_a, prv_b, prv_c]
-    max_self_compositions=[1_000, 1_000, 1_000]
+    prvs=[prv_a, prv_b, prv_c],
+    max_self_compositions=[1_000, 1_000, 1_000],
     eps_error=0.1,
     delta_error=1e-10
 )
