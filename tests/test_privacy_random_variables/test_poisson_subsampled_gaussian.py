@@ -7,8 +7,8 @@ import pytest
 import numpy as np
 import sys
 
-from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log
-
+from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism
+from prv_accountant.privacy_random_variables.poisson_subsampled_gaussian_mechanism import log
 
 
 def test_safe_log():
