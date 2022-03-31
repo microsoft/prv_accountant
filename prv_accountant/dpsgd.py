@@ -30,12 +30,11 @@ def find_noise_multiplier(sampling_probability: float, num_steps: int, target_ep
         acc = DPSGDAccountant(
             noise_multiplier=mu,
             sampling_probability=sampling_probability,
-            delta=target_delta,
             max_compositions=num_steps,
             eps_error=eps_error/2,
             delta_error=target_delta/1000
         )
-        return acc.compute_epsilon(num_steps)
+        return acc.compute_epsilon(delta=target_delta, num_self_compositions=num_steps)
 
     mu_max = 100.0
 
