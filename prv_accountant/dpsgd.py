@@ -11,11 +11,28 @@ class DPSGDAccountant(PRVAccountant):
     """
     def __init__(self, noise_multiplier: float, sampling_probability: float,
                  max_steps: int, eps_error: float = 0.1, delta_error: float = 1e-9) -> None:
+        """
+        Accountant for DP-SGD
+
+        :param float noise_multiplier: The noise multiplier of DP-SGD.
+        :param float sampling_probability: The sampling probability.
+        :param int max_steps: The maximum number of DP-SGD steps.
+        :param eps_error: Maximum error allowed in $\varepsilon$. Typically around 0.1
+        :param delta_error: Maximum error allowed in $\\delta$. typically around $10^{-3} \times \\delta$
+        """
         super().__init__(prvs=PoissonSubsampledGaussianMechanism(noise_multiplier=noise_multiplier,
                                                                  sampling_probability=sampling_probability),
                          max_self_compositions=max_steps, eps_error=eps_error, delta_error=delta_error)
     
     def compute_epsilon(self, delta: float, num_steps: int) -> Tuple[float, float, float]:
+        """
+        Compute epsilon bounds for a given delta
+
+        :param float delta: Target delta
+        :param int num_steps: Number of DP-SGD steps.
+        :return: Return lower bound for $\varepsilon$, estimate for $\varepsilon$ and upper bound for $\varepsilon$
+        :rtype: Tuple[float,float,float]
+        """
         return super().compute_epsilon(delta=delta, num_self_compositions=num_steps)
 
 
