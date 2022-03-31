@@ -10,8 +10,8 @@ class TestFindNoiseMultiplier:
 
     def test_inverse(self):
         mu = find_noise_multiplier(2e-3, 10_000, 4.0, 1e-7)
-        acc = DPSGDAccountant(mu, 2e-3, max_self_compositions=10_000, eps_error=0.5)
-        eps = acc.compute_epsilon(delta=1e-7, num_self_compositions=10_000)
+        acc = DPSGDAccountant(mu, 2e-3, max_steps=10_000, eps_error=0.5)
+        eps = acc.compute_epsilon(delta=1e-7, num_steps=10_000)
         assert eps[2] == pytest.approx(4, abs=0.5)
 
     def test_robustness(self):
