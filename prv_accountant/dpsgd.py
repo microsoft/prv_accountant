@@ -9,8 +9,10 @@ class DPSGDAccountant(PRVAccountant):
     Accountant for DP-SGD or similar algorithms such as DP-Adam
     """
     def __init__(self, noise_multiplier: float, sampling_probability: float,
-                 max_compositions: int, eps_error: float = None) -> None:
-        super().__init__(prvs=[PoissonSubsampledGaussianMechanism()])
+                 max_compositions: int, eps_error: float = 0.1, delta_error: float = 1e-9) -> None:
+        super().__init__(prvs=PoissonSubsampledGaussianMechanism(noise_multiplier=noise_multiplier,
+                                                                 sampling_probability=sampling_probability),
+                         max_self_compositions=max_compositions, eps_error=eps_error, delta_error=delta_error)
 
 
 def find_noise_multiplier(sampling_probability: float, num_steps: int, target_epsilon: float, target_delta: float,
@@ -30,7 +32,8 @@ def find_noise_multiplier(sampling_probability: float, num_steps: int, target_ep
             sampling_probability=sampling_probability,
             delta=target_delta,
             max_compositions=num_steps,
-            eps_error=eps_error/2
+            eps_error=eps_error/2,
+            delta_error=target_delta/1000
         )
         return acc.compute_epsilon(num_steps)
 
