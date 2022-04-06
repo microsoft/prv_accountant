@@ -3,6 +3,7 @@
 
 from prv_accountant.privacy_random_variables import PrivacyRandomVariableTruncated, PoissonSubsampledGaussianMechanism
 
+
 class TestPrivacyRandomVariableTruncated:
     def test_robustness(self):
         p = 0.00011878424327013022

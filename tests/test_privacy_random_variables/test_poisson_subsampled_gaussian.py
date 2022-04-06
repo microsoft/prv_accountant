@@ -87,5 +87,3 @@ class TestPoissonSubsampledGaussianMechanism:
         rdp_tf = rdp_accountant.compute_rdp(p, sigma, 1, orders)
 
         np.testing.assert_array_almost_equal(rdp, rdp_tf)
-
-

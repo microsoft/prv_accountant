@@ -8,11 +8,12 @@ from scipy.integrate import quad
 
 from prv_accountant import LaplaceMechanism, PRVAccountant
 
+
 class TestLaplaceMechanism:
     @pytest.mark.parametrize("mu", [0.2, 0.5, 1.0])
     def test_normalisation(self, mu: float):
         """
-        \E[exp(-Y)] = \int_R exp(-t) PDF_Y(t) dt == pytest.approx(1)
+        \E[exp(-Y)] = \int_R exp(-t) PDF_Y(t) dt == pytest.approx(1)  ## noqa: W605
         """
         prv = LaplaceMechanism(mu)
         e, _ = quad(lambda t: np.exp(-t)*prv.cdf(t), -50, 50)
