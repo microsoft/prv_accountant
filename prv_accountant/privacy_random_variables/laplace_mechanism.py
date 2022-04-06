@@ -5,15 +5,18 @@ import numpy as np
 
 from .abstract_privacy_random_variable import PrivacyRandomVariable
 
+
 class LaplaceMechanism(PrivacyRandomVariable):
     def __init__(self, mu: float) -> None:
         self.mu = mu
         assert self.mu > 0
 
     def cdf(self, t):
-        return np.where( t >= self.mu,
+        return np.where(
+            t >= self.mu,
             1,
-            np.where(np.logical_and(-self.mu < t, t < self.mu),
+            np.where(
+                np.logical_and(-self.mu < t, t < self.mu),
                 1/2*np.exp(1/2*(t-self.mu)),
                 0
             )

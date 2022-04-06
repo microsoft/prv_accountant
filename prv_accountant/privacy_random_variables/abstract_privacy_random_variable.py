@@ -5,7 +5,6 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 from scipy import integrate
-from typing import Any
 
 
 class NoRDPImplementation(NotImplementedError):
@@ -66,4 +65,3 @@ class PrivacyRandomVariableTruncated:
 
     def cdf(self, t):
         return np.where(t < self.t_min, 0, np.where(t < self.t_max, self.prv.cdf(t)/self.remaining_mass, 1))
-

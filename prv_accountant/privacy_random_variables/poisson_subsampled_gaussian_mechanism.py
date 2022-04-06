@@ -21,7 +21,6 @@ def log(x):
                     np.where(x_is_0, -np.inf, np.nan))
 
 
-
 class PoissonSubsampledGaussianMechanism(PrivacyRandomVariable):
     def __init__(self, sampling_probability: float, noise_multiplier: float) -> None:
         self.p = np.longdouble(sampling_probability)
