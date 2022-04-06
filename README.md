@@ -61,6 +61,12 @@ The final bounds and estimates for <img src="https://render.githubusercontent.co
 eps_low, eps_est, eps_up = accountant.compute_epsilon(delta=1e-6, num_self_compositions=[m, n, o])
 ```
 
+### Custom Mechanisms
+
+It is also possible to add custom mechanisms for the composition computation.
+An example can be found in [this notebook](notebooks/laplace-mechanism.ipynb).
+All we need is to implement the CDF of the privacy loss distribution.
+
 
 ### DP-SGD
 
