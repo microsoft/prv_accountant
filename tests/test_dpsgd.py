@@ -6,7 +6,7 @@ from prv_accountant.dpsgd import find_noise_multiplier, DPSGDAccountant
 class TestFindNoiseMultiplier:
     def test_sensible_range(self):
         mu = find_noise_multiplier(sampling_probability=2e-3, num_steps=10_000, target_epsilon=4.0, target_delta=1e-7)
-        assert 0 < mu and mu < 2 # Check that mu is in a sensible interval
+        assert 0 < mu and mu < 2  # Check that mu is in a sensible interval
 
     def test_inverse(self):
         mu = find_noise_multiplier(2e-3, 10_000, 4.0, 1e-7)
@@ -16,7 +16,7 @@ class TestFindNoiseMultiplier:
 
     def test_robustness(self):
         with pytest.warns(None) as record:
-            mu = find_noise_multiplier(
+            find_noise_multiplier(
                 sampling_probability=256/50_000,
                 num_steps=int(50*50_000/256),
                 target_epsilon=10.0,

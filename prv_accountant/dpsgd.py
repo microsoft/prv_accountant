@@ -23,7 +23,7 @@ class DPSGDAccountant(PRVAccountant):
         super().__init__(prvs=PoissonSubsampledGaussianMechanism(noise_multiplier=noise_multiplier,
                                                                  sampling_probability=sampling_probability),
                          max_self_compositions=max_steps, eps_error=eps_error, delta_error=delta_error)
-    
+
     def compute_epsilon(self, delta: float, num_steps: int) -> Tuple[float, float, float]:
         """
         Compute epsilon bounds for a given delta
@@ -37,7 +37,7 @@ class DPSGDAccountant(PRVAccountant):
 
 
 def find_noise_multiplier(sampling_probability: float, num_steps: int, target_epsilon: float, target_delta: float,
-                          eps_error: float=0.1) -> float:
+                          eps_error: float = 0.1) -> float:
     """
     Find a noise multiplier that satisfies a given target epsilon.
 
@@ -77,8 +77,7 @@ def find_noise_multiplier(sampling_probability: float, num_steps: int, target_ep
         mu_L /= np.sqrt(2)
         eps_L = compute_epsilon(mu_L)[0]
 
-
-    has_converged = False 
+    has_converged = False
     bracket = [mu_L, mu_R]
     while not has_converged:
         mu_err = (bracket[1]-bracket[0])*0.01
