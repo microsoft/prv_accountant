@@ -16,7 +16,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://github.com/microsoft/prv_accountant',
     author='Microsoft Corporation',
-    packages=["prv_accountant"],
+    packages=["prv_accountant", "prv_accountant.privacy_random_variables"],
     python_requires=">=3.7.0",
     include_package_data=True,
     extras_require={
