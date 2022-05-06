@@ -11,8 +11,7 @@ class PureDPMechanism(PrivacyRandomVariable):
         assert self.eps > 0
 
     def cdf(self, t):
-        return np.where(t<-self.eps, 0, np.where(t<self.eps, 1/(1+np.exp(self.eps)),1))
+        return np.where(t < -self.eps, 0, np.where(t < self.eps, 1/(1+np.exp(self.eps)), 1))
 
     def rdp(self, alpha):
         return (alpha-1)*self.eps/alpha
- 
