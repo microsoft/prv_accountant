@@ -7,10 +7,6 @@ from abc import ABC, abstractmethod
 from scipy import integrate
 
 
-class NoRDPImplementation(NotImplementedError):
-    pass
-
-
 class PrivacyRandomVariable(ABC):
     def mean(self) -> float:
         """Compute the mean of the random variable."""
@@ -31,7 +27,7 @@ class PrivacyRandomVariable(ABC):
 
     def rdp(self, alpha: float) -> float:
         """Compute RDP of this mechanism of order alpha."""
-        raise NoRDPImplementation(f"{type(self)} has not provided an implementation for rdp.")
+        raise NotImplementedError(f"{type(self)} has not provided an implementation for rdp.")
 
 
 class PrivacyRandomVariableTruncated:
