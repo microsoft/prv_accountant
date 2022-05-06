@@ -23,6 +23,11 @@ class LaplaceMechanism(PrivacyRandomVariable):
         )
 
     def rdp(self, alpha):
+        """
+        The Renyi divergence for the Laplace mechanism
+
+        See Mironov, I. (2017) Renyi Differential Privacy
+        """
         return 1/(alpha-1) * np.log(
             alpha/(2*alpha-1) * np.exp((alpha-1)*self.mu) + (alpha-1)/(2*alpha-1) * np.exp(-alpha*self.mu)
         )
