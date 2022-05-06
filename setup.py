@@ -30,6 +30,9 @@ setuptools.setup(
             "pandas",
             "pytest",
             "flake8"
+        ],
+        "opacus": [
+            "opacus>=1.0.0"
         ]
     },
     install_requires=[
