@@ -7,7 +7,8 @@ import pytest
 import numpy as np
 import sys
 
-from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, log, PrivacyRandomVariableTruncated
+from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism
+from prv_accountant.privacy_random_variables.poisson_subsampled_gaussian_mechanism import log
 
 
 def test_safe_log():
@@ -86,19 +87,3 @@ class TestPoissonSubsampledGaussianMechanism:
         rdp_tf = rdp_accountant.compute_rdp(p, sigma, 1, orders)
 
         np.testing.assert_array_almost_equal(rdp, rdp_tf)
-
-
-class TestPrivacyRandomVariableTruncated:
-    def test_robustness(self):
-        p = 0.00011878424327013022
-        mu = 0.2
-
-        prv = PrivacyRandomVariableTruncated(
-            prv=PoissonSubsampledGaussianMechanism(
-                sampling_probability=p, noise_multiplier=mu
-            ),
-            t_min=-134.4230546183631,
-            t_max=134.42325451405242
-        )
-
-        assert prv.mean() > 1e-4
