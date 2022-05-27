@@ -5,8 +5,8 @@ from prv_accountant import PrivacyRandomVariable
 
 
 class GaussianMechanism(PrivacyRandomVariable):
-    def __init__(self, noise_multiplier: float, L2_sensitivity: float = 1.0) -> None:
-        self.mu = L2_sensitivity/noise_multiplier
+    def __init__(self, noise_multiplier: float, l2_sensitivity: float = 1.0) -> None:
+        self.mu = l2_sensitivity/noise_multiplier
         assert self.mu > 0
 
     def cdf(self, t):
