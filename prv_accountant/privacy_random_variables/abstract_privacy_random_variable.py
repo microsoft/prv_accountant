@@ -17,17 +17,28 @@ class PrivacyRandomVariable(ABC):
         return self.cdf(b) - self.cdf(a)
 
     def pdf(self, t):
-        """Compute the probability density function of this random variable at point t."""
+        """
+        Compute the probability density function of this privacy random variable at point t
+        conditioned on the value being finite.
+        """
         raise NotImplementedError(f"{type(self)} has not provided an implementation for a pdf.")
 
     @abstractmethod
     def cdf(self, t):
-        """Compute the cumulative distribution function of this random variable at point t."""
+        """
+        Compute the cumulative distribution function of this privacy random variable at point t
+        conditioned on the value being finite.
+        """
         pass
 
     def rdp(self, alpha: float) -> float:
         """Compute RDP of this mechanism of order alpha."""
         raise NotImplementedError(f"{type(self)} has not provided an implementation for rdp.")
+
+    @property
+    def pm_inf(self) -> float:
+        """Probability mass at infinity."""
+        return 0.0
 
 
 class PrivacyRandomVariableTruncated:
@@ -61,3 +72,7 @@ class PrivacyRandomVariableTruncated:
 
     def cdf(self, t):
         return np.where(t < self.t_min, 0, np.where(t < self.t_max, self.prv.cdf(t)/self.remaining_mass, 1))
+
+    @property
+    def pm_inf(self) -> float:
+        return self.prv.pm_inf

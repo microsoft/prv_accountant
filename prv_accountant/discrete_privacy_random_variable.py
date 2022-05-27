@@ -13,6 +13,7 @@ from typing import Tuple
 class DiscretePrivacyRandomVariable:
     pmf: np.ndarray
     domain: Domain
+    log_pmc_inf: float = 0.0 # log(1-pm_inf) where pm_inf is the probability mass at infinity
 
     def __len__(self) -> int:
         assert len(self.pmf) == len(self.domain)
@@ -42,4 +43,6 @@ class DiscretePrivacyRandomVariable:
 
     def compute_delta_estimate(self, epsilon: float) -> float:
         t = self.domain.ts()
-        return float(np.where(t >= epsilon, self.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
+        delta_fin = float(np.where(t >= epsilon, self.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
+        delta_inf = 1-self.log_pmc_inf
+        return delta_fin*np.exp*(1-delta_inf) + delta_inf
