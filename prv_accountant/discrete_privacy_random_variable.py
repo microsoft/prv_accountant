@@ -43,3 +43,8 @@ class DiscretePrivacyRandomVariable:
     def compute_delta_estimate(self, epsilon: float) -> float:
         t = self.domain.ts()
         return float(np.where(t >= epsilon, self.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
+
+    def compute_membership_inference_advantage_estimate(self) -> float:
+        delta = self.compute_delta_estimate(epsilon=0.0)  # We know that eps=0 maximises MIAdv
+        fnr = (1-delta)/2
+        return 1-2*fnr
