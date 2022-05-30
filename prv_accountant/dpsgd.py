@@ -1,8 +1,15 @@
+from ast import Import
 import numpy as np
+import warnings
 from scipy import optimize
 from typing import Tuple
 
 from prv_accountant import PRVAccountant, PoissonSubsampledGaussianMechanism
+
+try:
+    from ._opacus import OpacusAccountant
+except ImportError:
+    pass
 
 
 class DPSGDAccountant(PRVAccountant):
@@ -34,6 +41,11 @@ class DPSGDAccountant(PRVAccountant):
         :rtype: Tuple[float,float,float]
         """
         return super().compute_epsilon(delta=delta, num_self_compositions=num_steps)
+
+
+@require_opacus
+class OpacusAccountant(opacus.Accountant):
+    pass
 
 
 def find_noise_multiplier(sampling_probability: float, num_steps: int, target_epsilon: float, target_delta: float,
