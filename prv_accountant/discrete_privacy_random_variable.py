@@ -40,11 +40,25 @@ class DiscretePrivacyRandomVariable:
         eps_estimate = find_epsilon(delta)
         return float(eps_lower), float(eps_estimate), float(eps_upper)
 
+    def compute_epsilon_delta_estimates(self) -> Tuple[np.ndarray, np.ndarray]:
+        t = self.domain.ts()
+        p = self.pmf[t>=0]
+        t = t[t>=0]
+        d1 = np.flip(np.flip(p).cumsum())
+        d2 = np.flip(np.flip(p*np.exp(-t)).cumsum())
+        deltas = d1 - np.exp(t) * d2
+        return t, deltas
+
+    def compute_fnr_fpr_estimates(self) -> Tuple[np.ndarray, np.ndarray]:
+        epss, deltas = self.compute_epsilon_delta_estimates()
+        fprs = (deltas[:-1], deltas[1:])/(np.exp(epss[1:]) - np.exp(epss[:-1]))
+        fnrs = -np.exp(epss)*fprs + 1-deltas
+        return fnrs, fprs
+
     def compute_delta_estimate(self, epsilon: float) -> float:
         t = self.domain.ts()
         return float(np.where(t >= epsilon, self.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
 
-    def compute_membership_inference_advantage_estimate(self) -> float:
-        delta = self.compute_delta_estimate(epsilon=0.0)  # We know that eps=0 maximises MIAdv
-        fnr = (1-delta)/2
-        return 1-2*fnr
+    def compute_membership_inference_advantage(self) -> Tuple[float, float, float]:
+        deltas = self.compute_delta(epsilon=0.0)  # We know that eps=0 maximises MIAdv
+        return tuple(reversed(deltas))
