@@ -43,10 +43,6 @@ class DPSGDAccountant(PRVAccountant):
         return super().compute_epsilon(delta=delta, num_self_compositions=num_steps)
 
 
-@require_opacus
-class OpacusAccountant(opacus.Accountant):
-    pass
-
 
 def find_noise_multiplier(sampling_probability: float, num_steps: int, target_epsilon: float, target_delta: float,
                           eps_error: float = 0.1) -> float:

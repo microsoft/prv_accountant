@@ -42,18 +42,25 @@ class DiscretePrivacyRandomVariable:
 
     def compute_epsilon_delta_estimates(self) -> Tuple[np.ndarray, np.ndarray]:
         t = self.domain.ts()
-        p = self.pmf[t>=0]
-        t = t[t>=0]
+        p = self.pmf[t>=0.0]
+        t = t[t>=0.0]
         d1 = np.flip(np.flip(p).cumsum())
         d2 = np.flip(np.flip(p*np.exp(-t)).cumsum())
         deltas = d1 - np.exp(t) * d2
         return t, deltas
 
-    def compute_fnr_fpr_estimates(self) -> Tuple[np.ndarray, np.ndarray]:
+    def compute_f_estimates(self) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Compute trade-off function 
+
+        See Proposition 2.11 in https://arxiv.org/pdf/1905.02383.pdf
+        """
         epss, deltas = self.compute_epsilon_delta_estimates()
-        fprs = (deltas[:-1], deltas[1:])/(np.exp(epss[1:]) - np.exp(epss[:-1]))
-        fnrs = -np.exp(epss)*fprs + 1-deltas
-        return fnrs, fprs
+        fprs_seg = (deltas[:-1] - deltas[1:])/(np.exp(epss[1:]) - np.exp(epss[:-1]))
+        fnrs_seg = -np.exp(epss)[:-1]*fprs_seg + 1-deltas[:-1]
+        fnrs = np.concatenate([np.flip(fnrs_seg), fprs_seg])
+        fprs = np.concatenate([np.flip(fprs_seg), fnrs_seg])
+        return fprs, fnrs
 
     def compute_delta_estimate(self, epsilon: float) -> float:
         t = self.domain.ts()
