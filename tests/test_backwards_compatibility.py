@@ -12,3 +12,4 @@ def test_accountant_warning():
             eps_error=0.1,
             max_compositions=1000
         )
+        accountant.compute_epsilon(num_compositions=10)
