@@ -9,10 +9,15 @@ class TestFindNoiseMultiplier:
         assert 0 < mu and mu < 2  # Check that mu is in a sensible interval
 
     def test_inverse(self):
-        mu = find_noise_multiplier(2e-3, 10_000, 4.0, 1e-7)
-        acc = DPSGDAccountant(mu, 2e-3, max_steps=10_000, eps_error=0.5)
-        eps = acc.compute_epsilon(delta=1e-7, num_steps=10_000)
-        assert eps[2] == pytest.approx(4, abs=0.5)
+        max_steps = 10_000
+        target_epsilon = 4.0
+        eps_error = 0.5
+        target_delta = 1e-7
+        sampling_probability = 2e-3
+        mu = find_noise_multiplier(sampling_probability, max_steps, target_epsilon, target_delta)
+        acc = DPSGDAccountant(mu, sampling_probability, max_steps=max_steps, eps_error=eps_error)
+        eps = acc.compute_epsilon(delta=target_delta, num_steps=max_steps)
+        assert eps[2] == pytest.approx(target_epsilon, abs=eps_error)
 
     def test_robustness(self):
         with pytest.warns(None) as record:
