@@ -32,7 +32,7 @@ class PrivacyRandomVariable(ABC):
         pass
 
     def rdp(self, alpha: float) -> float:
-        """Compute RDP of this mechanism of order alpha."""
+        """Compute RDP of this mechanism of order alpha conditioned on the value being finite."""
         raise NotImplementedError(f"{type(self)} has not provided an implementation for rdp.")
 
     @property
