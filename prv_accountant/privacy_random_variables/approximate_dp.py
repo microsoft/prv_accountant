@@ -1,8 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-import numpy as np
-
 from .abstract_privacy_random_variable import PrivacyRandomVariable
 from .pure_dp_mechanism import PureDPMechanism
 

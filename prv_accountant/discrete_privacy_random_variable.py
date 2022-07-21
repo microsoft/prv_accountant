@@ -13,7 +13,7 @@ from typing import Tuple
 class DiscretePrivacyRandomVariable:
     pmf: np.ndarray
     domain: Domain
-    log_pmc_inf: float = 0.0 # log(1-pm_inf) where pm_inf is the probability mass at infinity
+    log_pmc_inf: float = 0.0  # log(1-pm_inf) where pm_inf is the probability mass at infinity
 
     def __len__(self) -> int:
         assert len(self.pmf) == len(self.domain)

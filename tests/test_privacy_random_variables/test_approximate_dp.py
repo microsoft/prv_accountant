@@ -16,7 +16,7 @@ class TestApproximateDP:
         """Check that the PRV obeys strong composition"""
         prv = ApproximateDPMechanism(epsilon=epsilon, delta=delta)
         eps_error = 0.1
-        delta_error = delta/1000 
+        delta_error = delta/1000
         accountant = PRVAccountant(prvs=[prv], eps_error=eps_error, delta_error=delta_error, max_self_compositions=[num_comp])
 
         delta_tilde = num_comp*delta + delta_prime
