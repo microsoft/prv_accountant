@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 import scipy
-from prv_accountant import PrivacyRandomVariable
+from .abstract_privacy_random_variable import PrivacyRandomVariable
 
 
 class GaussianMechanism(PrivacyRandomVariable):

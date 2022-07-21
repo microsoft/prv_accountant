@@ -69,7 +69,9 @@ class Fourier(Composer):
 
         domain = self.domain.shift_right(self.domain.shifts()*(num_compositions-1))
 
-        return DiscretePrivacyRandomVariable(f_n, domain)
+        log_pmc_inf = sum(prv.log_pmc_inf*num_comp for prv, num_comp in zip(self.prvs, num_self_compositions))
+
+        return DiscretePrivacyRandomVariable(f_n, domain, log_pmc_inf=log_pmc_inf)
 
 
 class ConvolutionTree(Composer):
@@ -112,7 +114,8 @@ class ConvolutionTree(Composer):
                   prv_R: DiscretePrivacyRandomVariable) -> DiscretePrivacyRandomVariable:
         f = convolve(prv_L.pmf, prv_R.pmf, mode="same")
         domain = prv_L.domain.shift_right(prv_R.domain.shifts())
-        return DiscretePrivacyRandomVariable(f, domain)
+        log_pmc_inf = prv_L.log_pmc_inf + prv_R.log_pmc_inf
+        return DiscretePrivacyRandomVariable(f, domain, log_pmc_inf=log_pmc_inf)
 
 
 class Heterogeneous(Composer):
