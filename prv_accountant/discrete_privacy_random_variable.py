@@ -20,6 +20,9 @@ class DiscretePrivacyRandomVariable:
         return len(self.pmf)
 
     def compute_epsilon(self, delta: float, delta_error: float, epsilon_error: float) -> Tuple[float, float, float]:
+        delta_inf = 1 - np.exp(self.log_pmc_inf)
+        delta = (delta - delta_inf)/(1-delta_inf)
+
         if np.finfo(np.longdouble).eps*len(self.domain) > delta - delta_error:
             raise ValueError("Floating point errors will dominate for such small values of delta. "
                              "Increase delta or reduce domain size.")
@@ -34,7 +37,7 @@ class DiscretePrivacyRandomVariable:
             i = np.searchsorted(ndelta, -delta_target, side='left')
             if i <= 0:
                 raise RuntimeError("Cannot compute epsilon")
-            return np.log((d1[i-1]-delta_target)/d2[i-1])
+            return np.log((d1[i]-delta_target)/d2[i])
 
         eps_upper = find_epsilon(delta - delta_error) + epsilon_error
         eps_lower = find_epsilon(delta + delta_error) - epsilon_error
@@ -44,5 +47,5 @@ class DiscretePrivacyRandomVariable:
     def compute_delta_estimate(self, epsilon: float) -> float:
         t = self.domain.ts()
         delta_fin = float(np.where(t >= epsilon, self.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
-        delta_inf = 1-self.log_pmc_inf
-        return delta_fin*np.exp*(1-delta_inf) + delta_inf
+        delta_inf = 1 - np.exp(self.log_pmc_inf)
+        return delta_fin*(1-delta_inf) + delta_inf

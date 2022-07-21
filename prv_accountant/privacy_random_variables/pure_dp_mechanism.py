@@ -2,7 +2,7 @@
 # Licensed under the MIT License.
 
 import numpy as np
-from prv_accountant import PrivacyRandomVariable
+from .abstract_privacy_random_variable import PrivacyRandomVariable
 
 
 class PureDPMechanism(PrivacyRandomVariable):
