@@ -69,7 +69,7 @@ class Fourier(Composer):
 
         domain = self.domain.shift_right(self.domain.shifts()*(num_compositions-1))
 
-        log_pmc_inf = np.sum(prv.log_pmc_inf*num_comp for prv, num_comp in zip(self.prvs, num_self_compositions))
+        log_pmc_inf = sum(prv.log_pmc_inf*num_comp for prv, num_comp in zip(self.prvs, num_self_compositions))
 
         return DiscretePrivacyRandomVariable(f_n, domain, log_pmc_inf=log_pmc_inf)
 
