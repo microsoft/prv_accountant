@@ -28,3 +28,15 @@ class TestApproximateDP:
         )
 
         assert eps_tilde_lower < eps_tilde_sc
+
+    @pytest.mark.parametrize("delta_1", [1e-7, 1e-8])
+    @pytest.mark.parametrize("num_comp", [10_000, 100_000])
+    def test_zero_delta(self, delta_1, num_comp):
+        prv = ApproximateDPMechanism(epsilon=0.0, delta=delta_1)
+        eps_error = 0.1
+        delta_error = delta_1/100
+        accountant = PRVAccountant(prvs=[prv], eps_error=eps_error, delta_error=delta_error, max_self_compositions=[num_comp])
+
+        _, delta, _ = accountant.compute_delta(epsilon=0.0, num_self_compositions=[num_comp])
+
+        assert delta == pytest.approx(1 - (1-delta_1)**num_comp)
