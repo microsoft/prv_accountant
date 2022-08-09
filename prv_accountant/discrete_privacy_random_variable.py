@@ -23,6 +23,9 @@ class DiscretePrivacyRandomVariable:
         delta_inf = 1 - np.exp(self.log_pmc_inf)
         delta_fin = (delta - delta_inf)/(1-delta_inf)
 
+        if delta_fin <= 0:
+            return (np.inf, np.inf, np.inf)
+
         if np.finfo(np.longdouble).eps*len(self.domain) > delta_fin - delta_error:
             raise ValueError("Floating point errors will dominate for such small values of delta. "
                              "Increase delta or reduce domain size.")
