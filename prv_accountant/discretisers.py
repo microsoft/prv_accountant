@@ -31,7 +31,7 @@ class LeftNode(Discretiser):
 
         domain_shifted = domain.shift_right(mean_shift)
 
-        return DiscretePrivacyRandomVariable(f, domain_shifted)
+        return DiscretePrivacyRandomVariable(f, domain_shifted, log_pmc_inf=np.log(1-prv.pm_inf))
 
 
 class CellCentred(Discretiser):
@@ -51,4 +51,4 @@ class CellCentred(Discretiser):
 
         domain_shifted = domain.shift_right(mean_shift)
 
-        return DiscretePrivacyRandomVariable(f, domain_shifted)
+        return DiscretePrivacyRandomVariable(f, domain_shifted, log_pmc_inf=np.log(1-prv.pm_inf))
