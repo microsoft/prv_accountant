@@ -1,6 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 import scipy
+import numpy as np
 from .abstract_privacy_random_variable import PrivacyRandomVariable
 
 
@@ -10,7 +11,7 @@ class GaussianMechanism(PrivacyRandomVariable):
         assert self.mu > 0
 
     def cdf(self, t):
-        return scipy.stats.norm.cdf(t/self.mu - self.mu/2)
+        return scipy.stats.norm.cdf(np.double(t/self.mu - self.mu/2))
 
     def rdp(self, alpha):
         return alpha*self.mu**2/2

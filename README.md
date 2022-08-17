@@ -78,11 +78,11 @@ After $m+n+o$ training steps, the resulting privacy mechanism $M$ for the whole 
 Using the `prv_accountant` we need to create a privacy random variable for each mechanism
 
 ```python
-from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism
+from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, GaussianMechanism, LaplaceMechanism
 
 prv_a = PoissonSubsampledGaussianMechanism(noise_multiplier=0.8, sampling_probability=5e-3)
-prv_b = GaussianMechanism(noise_multiplier=2.0)
-prv_c = LaplaceMechanism(mu=1e-2)
+prv_b = GaussianMechanism(noise_multiplier=8.0)
+prv_c = LaplaceMechanism(mu=0.1)
 
 m = 100
 n = 200
