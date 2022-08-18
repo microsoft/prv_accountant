@@ -24,7 +24,9 @@ from prv_accountant import PoissonSubsampledGaussianMechanism
 prv = PoissonSubsampledGaussianMechanism(noise_multiplier, sampling_probability)
 ```
 which computes the privacy curve
+
 $$ \delta \left ( \mathcal{N}(0, \sigma) \| (1-p) \mathcal{N}(0, \sigma) + p \mathcal{N}(1, \sigma) \right ) \; , $$
+
 where $p$ is the sampling probability and $\sigma$ is the noise multiplier.
 The second argument represents a mixture distribution.
 
@@ -36,7 +38,9 @@ from prv_accountant import GaussianMechanism
 prv = GaussianMechanism(noise_multiplier)
 ```
 which computes the privacy curve
+
 $$ \delta \left ( \mathcal{N}(0, \sigma) \| \mathcal{N}(1, \sigma) \right ) $$
+
 where $\sigma$ is the noise multiplier.
 
 
@@ -47,7 +51,9 @@ from prv_accountant import LaplaceMechanism
 prv = LaplaceMechanism(mu)
 ```
 which computes the privacy curve
+
 $$ \delta \left ( \textsf{Lap}(0, 1) \| \textsf{Lap}(\mu, 1) \right ) $$
+
 where $\mu$ is the mean of the Laplace mechanism.
 
 
