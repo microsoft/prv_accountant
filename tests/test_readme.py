@@ -2,11 +2,11 @@
 
 def test_1():
     from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism, GaussianMechanism, LaplaceMechanism
-    
+
     prv_a = PoissonSubsampledGaussianMechanism(noise_multiplier=0.8, sampling_probability=5e-3)
     prv_b = GaussianMechanism(noise_multiplier=8.0)
     prv_c = LaplaceMechanism(mu=0.1)
-    
+
     m = 100
     n = 200
     o = 100
