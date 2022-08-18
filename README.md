@@ -52,9 +52,7 @@ prv = LaplaceMechanism(mu)
 ```
 which computes the privacy curve
 
-$$ \delta \left ( \textsf{Lap}(0, 1) \| \textsf{Lap}(\mu, 1) \right ), $$
-
-where $\mu$ is the mean of the Laplace mechanism.
+$$ \delta \left ( \textsf{Lap}(0, 1) \| \textsf{Lap}(\mu, 1) \right ). $$
 
 
 ### DP Guarantees
