@@ -25,7 +25,7 @@ prv = PoissonSubsampledGaussianMechanism(noise_multiplier, sampling_probability)
 ```
 which computes the privacy curve
 
-$$ \delta \left ( \mathcal{N}(0, \sigma) \| (1-p) \mathcal{N}(0, \sigma) + p \mathcal{N}(1, \sigma) \right ), $$
+$$ \delta \left ( \mathcal{N}(0, \sigma^2) \| (1-p) \mathcal{N}(0, \sigma^2) + p \mathcal{N}(1, \sigma^2) \right ), $$
 
 where $p$ is the sampling probability and $\sigma$ is the noise multiplier.
 The second argument represents a mixture distribution.
