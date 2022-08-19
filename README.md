@@ -39,7 +39,7 @@ prv = GaussianMechanism(noise_multiplier)
 ```
 which computes the privacy curve
 
-$$ \delta \left ( \mathcal{N}(0, \sigma) \| \mathcal{N}(1, \sigma) \right ), $$
+$$ \delta \left ( \mathcal{N}(0, \sigma^2) \| \mathcal{N}(1, \sigma^2) \right ), $$
 
 where $\sigma$ is the noise multiplier.
 
