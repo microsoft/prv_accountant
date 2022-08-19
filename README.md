@@ -55,7 +55,7 @@ which computes the privacy curve
 $$ \delta \left ( \textsf{Lap}(0, 1) \| \textsf{Lap}(\mu, 1) \right ). $$
 
 
-### DP Guarantees
+### Pure-DP and Approximate-DP
 
 It is also possible to compose DP guarantees directly
 - pure $\varepsilon$-DP guarantees using `prv_accountant.PureDPMechanism(epsilon)`
