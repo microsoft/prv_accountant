@@ -147,7 +147,7 @@ class Accountant:
         )
         self.delta = delta
         self.accountant = PRVAccountant(prvs=[prv], eps_error=eps_error, delta_error=self.delta/1000,
-                                        max_compositions=[max_compositions])
+                                        max_self_compositions=[max_compositions])
 
     def compute_epsilon(self, num_compositions: int) -> Tuple[float, float, float]:
         """

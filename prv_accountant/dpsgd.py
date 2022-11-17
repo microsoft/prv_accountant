@@ -1,15 +1,8 @@
-from ast import Import
 import numpy as np
-import warnings
 from scipy import optimize
 from typing import Tuple
 
 from prv_accountant import PRVAccountant, PoissonSubsampledGaussianMechanism
-
-try:
-    from ._opacus import OpacusAccountant
-except ImportError:
-    pass
 
 
 class DPSGDAccountant(PRVAccountant):
@@ -43,9 +36,8 @@ class DPSGDAccountant(PRVAccountant):
         return super().compute_epsilon(delta=delta, num_self_compositions=num_steps)
 
 
-
 def find_noise_multiplier(sampling_probability: float, num_steps: int, target_epsilon: float, target_delta: float,
-                          eps_error: float = 0.1) -> float:
+                          eps_error: float = 0.1, mu_max: float = 100.0) -> float:
     """
     Find a noise multiplier that satisfies a given target epsilon.
 
@@ -54,6 +46,7 @@ def find_noise_multiplier(sampling_probability: float, num_steps: int, target_ep
     :param float target_epsilon: Desired target epsilon
     :param float target_delta: Value of DP delta
     :param float eps_error: Error allowed for final epsilon
+    :param float mu_max: Maximum value of noise multiplier of the search.
     """
     def compute_epsilon(mu: float) -> float:
         acc = DPSGDAccountant(
@@ -64,8 +57,6 @@ def find_noise_multiplier(sampling_probability: float, num_steps: int, target_ep
             delta_error=target_delta/1000
         )
         return acc.compute_epsilon(delta=target_delta, num_steps=num_steps)
-
-    mu_max = 100.0
 
     mu_R = 1.0
     eps_R = float('inf')
