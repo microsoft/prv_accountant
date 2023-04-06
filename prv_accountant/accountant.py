@@ -9,7 +9,7 @@ from .other_accountants import RDP
 from . import discretisers
 from . import composers
 from .domain import Domain
-from .discrete_privacy_random_variable import DiscretePrivacyRandomVariable
+from .discrete_privacy_random_variable import DiscretePrivacyRandomVariable, convert_epsilon_deltas_to_trade_off_curve
 from .privacy_random_variables import PrivacyRandomVariableTruncated, PrivacyRandomVariable
 from . import privacy_random_variables
 
@@ -132,6 +132,26 @@ class PRVAccountant:
         """
         f_n = self.compute_composition(num_self_compositions)
         return f_n.compute_epsilon(delta, self.delta_error, self.eps_error)
+    
+    def compute_trade_off_curve(self, num_self_compositions: Sequence[int], bound: str = "lower") -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Compute trade off curve for a given delta
+
+        :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself
+        :param str bound: Either "lower" or "estimate". If "lower" then a lower bound to the true trade off curve is computed
+                          otherwise an estimate of the true trade off curve is computed.
+        :return: Return FPRs and FNRs for the trade off curve 
+        :rtype: Tuple[np.ndarray,np.ndarray]
+        """
+        epsilons, deltas = self.compute_composition(num_self_compositions).compute_epsilon_delta_estimates()
+        if bound == "lower":
+            epsilons = epsilons + self.eps_error
+            deltas = deltas + self.delta_error
+        elif bound == "estimate":
+            pass
+        else:
+            raise ValueError(f"Invalid mode {bound}, expected 'lower' or 'estimate'")
+        return convert_epsilon_deltas_to_trade_off_curve(epsilons=epsilons, deltas=deltas)
 
 
 class Accountant:
