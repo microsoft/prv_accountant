@@ -53,7 +53,7 @@ class PrivacyRandomVariableTruncated:
         lower_exponent = int(np.log10(np.abs(self.t_min)))
         upper_exponent = int(np.log10(self.t_max))
         points = np.concatenate([[self.t_min], -np.logspace(start=lower_exponent, stop=-5, num=10), [0],
-                                 np.logspace(start=upper_exponent, stop=-5, num=10)[::-1], [self.t_max]])
+                                 np.logspace(start=-5, stop=upper_exponent, num=10), [self.t_max]])
         m = 0.0
         for L, R in zip(points[:-1], points[1:]):
             I, err = integrate.quad(self.cdf, L, R, limit=500)
