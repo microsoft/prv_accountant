@@ -136,13 +136,12 @@ from prv_accountant.dpsgd import DPSGDAccountant
 accountant = DPSGDAccountant(
     noise_multiplier=0.8,
     sampling_probability=5e-3,
-    delta=1e-6,
     eps_error=0.1,
     delta_error=1e-10,
-    max_compositions=1000
+    max_steps=1000
 )
 
-eps_low, eps_estimate, eps_upper = accountant.compute_epsilon(num_compositions=1000)
+eps_low, eps_estimate, eps_upper = accountant.compute_epsilon(num_steps=1000, delta=1e-6)
 ```
 
 For more examples, have a look in the `notebooks` directory.
