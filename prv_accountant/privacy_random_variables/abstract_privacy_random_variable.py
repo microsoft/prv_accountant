@@ -49,7 +49,11 @@ class PrivacyRandomVariableTruncated:
         self.remaining_mass = self.prv.cdf(t_max) - self.prv.cdf(t_min)
 
     def mean(self) -> float:
-        points = [self.t_min, -1e-1, -1e-2, -1e-3, -1e-4, -1e-5, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, self.t_max]
+        # determine points based on t_min and t_max
+        lower_exponent = int(np.log10(np.abs(self.t_min)))
+        upper_exponent = int(np.log10(self.t_max))
+        points = np.concatenate([[self.t_min], -np.logspace(start=lower_exponent, stop=-5, num=10), [0],
+                                 np.logspace(start=-5, stop=upper_exponent, num=10), [self.t_max]])
         m = 0.0
         for L, R in zip(points[:-1], points[1:]):
             I, err = integrate.quad(self.cdf, L, R, limit=500)
