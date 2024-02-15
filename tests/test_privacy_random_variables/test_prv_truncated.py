@@ -1,7 +1,9 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-from prv_accountant.privacy_random_variables import PrivacyRandomVariableTruncated, PoissonSubsampledGaussianMechanism
+from prv_accountant.privacy_random_variables import (
+    PrivacyRandomVariableTruncated, PoissonSubsampledGaussianMechanism
+)
 
 
 class TestPrivacyRandomVariableTruncated:

@@ -132,15 +132,17 @@ class PRVAccountant:
         """
         f_n = self.compute_composition(num_self_compositions)
         return f_n.compute_epsilon(delta, self.delta_error, self.eps_error)
-    
-    def compute_trade_off_curve(self, num_self_compositions: Sequence[int], bound: str = "lower") -> Tuple[np.ndarray, np.ndarray]:
+
+    def compute_trade_off_curve(
+        self, num_self_compositions: Sequence[int], bound: str = "lower"
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Compute trade off curve for a given delta
 
         :param Sequence[int] num_self_compositions: Number of compositions for each PRV with itself
         :param str bound: Either "lower" or "estimate". If "lower" then a lower bound to the true trade off curve is computed
                           otherwise an estimate of the true trade off curve is computed.
-        :return: Return FPRs and FNRs for the trade off curve 
+        :return: Return FPRs and FNRs for the trade off curve
         :rtype: Tuple[np.ndarray,np.ndarray]
         """
         epsilons, deltas = self.compute_composition(num_self_compositions).compute_epsilon_delta_estimates()
