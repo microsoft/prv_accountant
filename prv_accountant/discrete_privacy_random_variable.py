@@ -48,8 +48,8 @@ class DiscretePrivacyRandomVariable:
 
     def compute_epsilon_delta_estimates(self) -> Tuple[np.ndarray, np.ndarray]:
         t = self.domain.ts()
-        p = self.pmf[t>=0.0]
-        t = t[t>=0.0]
+        p = self.pmf[ t>=0.0 ]
+        t = t[ t>=0.0 ]
         d1 = np.flip(np.flip(p).cumsum())
         d2 = np.flip(np.flip(p*np.exp(-t)).cumsum())
         deltas_fin = d1 - np.exp(t) * d2
