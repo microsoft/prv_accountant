@@ -30,7 +30,7 @@ setuptools.setup(
             "pandas",
             "pytest",
             "flake8"
-        ]
+        ],
     },
     install_requires=[
         "numpy",

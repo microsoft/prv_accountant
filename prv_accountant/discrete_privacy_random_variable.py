@@ -38,8 +38,7 @@ class DiscretePrivacyRandomVariable:
 
         def find_epsilon(delta_target):
             i = np.searchsorted(ndelta, -delta_target, side='left')
-            if i <= 0:
-                raise RuntimeError("Cannot compute epsilon")
+            assert i > 0
             return np.log((d1[i]-delta_target)/d2[i])
 
         eps_upper = find_epsilon(delta_fin - delta_error) + epsilon_error
@@ -47,8 +46,36 @@ class DiscretePrivacyRandomVariable:
         eps_estimate = find_epsilon(delta_fin)
         return float(eps_lower), float(eps_estimate), float(eps_upper)
 
+    def compute_epsilon_delta_estimates(self) -> Tuple[np.ndarray, np.ndarray]:
+        t = self.domain.ts()
+        p = self.pmf[t >= 0.0]
+        t = t[t >= 0.0]
+        d1 = np.flip(np.flip(p).cumsum())
+        d2 = np.flip(np.flip(p*np.exp(-t)).cumsum())
+        deltas_fin = d1 - np.exp(t) * d2
+        delta_inf = 1 - np.exp(self.log_pmc_inf)
+        deltas = deltas_fin*(1-delta_inf) + delta_inf
+        return t, deltas
+
     def compute_delta_estimate(self, epsilon: float) -> float:
         t = self.domain.ts()
         delta_fin = float(np.where(t >= epsilon, self.pmf*(1.0 - np.exp(epsilon)*np.exp(-t)), 0.0).sum())
         delta_inf = 1 - np.exp(self.log_pmc_inf)
         return delta_fin*(1-delta_inf) + delta_inf
+
+
+def convert_epsilon_deltas_to_trade_off_curve(epsilons: np.ndarray, deltas: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """Converts a sequence of epsilons and deltas to a trade-off function.
+
+    Args:
+        epsilons: the sequence of epsilons
+        deltas: the sequence of deltas
+    Returns:
+        fprs, fnrs: the false positive and false negative rates of the trade-off function.
+    """
+    assert len(epsilons) == len(deltas)
+    fprs_seg = (deltas[:-1] - deltas[1:])/(np.exp(epsilons[1:]) - np.exp(epsilons[:-1]))
+    fnrs_seg = -np.exp(epsilons)[:-1]*fprs_seg + 1-deltas[:-1]
+    fnrs = np.concatenate([np.flip(fnrs_seg), fprs_seg])
+    fprs = np.concatenate([np.flip(fprs_seg), fnrs_seg])
+    return fprs, fnrs
