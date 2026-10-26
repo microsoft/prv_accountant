@@ -155,6 +155,31 @@ For more examples, have a look in the `notebooks` directory.
 
 ## Contributing
 
+CI tests the package on Linux and Windows and checks scripts and notebook execution
+with Python 3.8, 3.9, and a floating `3.x` version. The notebook-output check uses
+only `3.x`. With the current setup-python action, `3.x` selects the newest stable
+Python 3 in the runner's tool cache, falling back to a download if none is cached.
+Python 3.7 is no longer included in CI; this does not change the package's minimum
+Python version.
+
+Install `.[test]` to run `python -m pytest` and `flake8`, or `.[notebooks]` to
+execute and clear the example notebooks. These extras keep the test and notebook
+environments separate from the TensorFlow dependencies in the legacy `.[extra]`
+bundle. Notebook dependencies have bounded major versions to limit resolver
+backtracking on older Python versions. Python 3.8/3.9 also constrain
+`fastjsonschema` below 2.22, which uses Python 3.10-only syntax, and Python 3.8
+constrains IPython below 8.13 to avoid incorrect Python compatibility metadata.
+Notebook matrix jobs run independently so a failure does not cancel the remaining
+Python versions.
+
+A separate Python 3.10 CI job installs `.[test,reference]` and runs the RDP
+comparison with `--require-reference`. It uses the pinned standalone Google
+`dp-accounting` package instead of the removed TensorFlow Privacy
+`rdp_accountant` module. Version 0.4.3 preserves the legacy numerical comparison;
+newer releases use different fractional-order bounds. Without the reference
+extra, the comparison is skipped; with `--require-reference`, a missing
+dependency is an error.
+
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.

@@ -9,6 +9,10 @@ def pytest_addoption(parser):
         "--run-large", action="store_true", default=False,
         help="run large tests"
     )
+    parser.addoption(
+        "--require-reference", action="store_true", default=False,
+        help="fail instead of skipping when the RDP reference dependency is missing"
+    )
 
 
 def pytest_configure(config):
