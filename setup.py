@@ -20,6 +20,23 @@ setuptools.setup(
     python_requires=">=3.7.0",
     include_package_data=True,
     extras_require={
+        "test": [
+            "pytest>=7,<10",
+            "flake8>=5,<8"
+        ],
+        "notebooks": [
+            "plotly>=5,<7",
+            "nbconvert>=7,<8",
+            "ipykernel>=6,<8",
+            "pandas>=1.5,<3",
+            # IPython 8.13 declares Python 3.8 support but requires 3.9 at import.
+            "ipython>=8,<8.13; python_version<'3.9'",
+            # fastjsonschema 2.22 uses Python 3.10 syntax on older interpreters.
+            "fastjsonschema>=2.15,<2.22; python_version<'3.10'"
+        ],
+        "reference": [
+            "dp-accounting==0.4.3"
+        ],
         "extra": [
             "plotly",
             "tqdm",

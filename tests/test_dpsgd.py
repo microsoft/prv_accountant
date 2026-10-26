@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 
 from prv_accountant.dpsgd import find_noise_multiplier, DPSGDAccountant
@@ -20,7 +22,8 @@ class TestFindNoiseMultiplier:
         assert eps[2] == pytest.approx(target_epsilon, abs=eps_error)
 
     def test_robustness(self):
-        with pytest.warns(None) as record:
+        with warnings.catch_warnings(record=True) as record:
+            warnings.simplefilter("always")
             find_noise_multiplier(
                 sampling_probability=256/50_000,
                 num_steps=int(50*50_000/256),

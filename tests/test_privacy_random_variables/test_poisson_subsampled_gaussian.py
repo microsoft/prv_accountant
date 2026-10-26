@@ -2,10 +2,10 @@
 # Licensed under the MIT License.
 
 import scipy
+import importlib.util
 import math
 import pytest
 import numpy as np
-import sys
 
 from prv_accountant.privacy_random_variables import PoissonSubsampledGaussianMechanism
 from prv_accountant.privacy_random_variables.poisson_subsampled_gaussian_mechanism import log
@@ -66,16 +66,15 @@ class TestPoissonSubsampledGaussianMechanism:
         pdf = Q.probability(t_L, t_R)
         assert pdf.sum() == pytest.approx(1.0, 1e-10)
 
-    def test_rdp(self):
+    def test_rdp(self, request):
         """
-        Compare to TF-privacy
+        Compare to Google's standalone DP Accounting RDP implementation.
         """
-        # Opting out of loading all sibling packages and their dependencies.
-        try:
-            sys.skip_tf_privacy_import = True
-            from tensorflow_privacy.privacy.analysis import rdp_accountant  # noqa: E402
-        except ImportError:
-            pytest.skip("Tensorflow-privacy not available.")
+        if importlib.util.find_spec("dp_accounting") is None:
+            if request.config.getoption("--require-reference"):
+                pytest.fail("Install .[reference] to run the required RDP reference test.")
+            pytest.skip("DP Accounting not available.")
+        from dp_accounting import GaussianDpEvent, PoissonSampledDpEvent, rdp
 
         p = 1e-2
         sigma = 1.0
@@ -83,7 +82,8 @@ class TestPoissonSubsampledGaussianMechanism:
 
         Q = PoissonSubsampledGaussianMechanism(p, sigma)
 
-        rdp = [Q.rdp(a) for a in orders]
-        rdp_tf = rdp_accountant.compute_rdp(p, sigma, 1, orders)
+        rdp_values = [Q.rdp(a) for a in orders]
+        reference = rdp.RdpAccountant(orders=orders)
+        reference.compose(PoissonSampledDpEvent(p, GaussianDpEvent(sigma)))
 
-        np.testing.assert_array_almost_equal(rdp, rdp_tf)
+        np.testing.assert_array_almost_equal(rdp_values, reference.rdp)
